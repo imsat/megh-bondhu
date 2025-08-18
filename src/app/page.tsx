@@ -5,7 +5,7 @@ import { Sun, Leaf, MapPin, Droplets, Home, ArrowLeft } from "lucide-react"
 import { translations, type Language } from "@/lib/translations"
 
 export default function MeghBondhuApp() {
-  const [language, setLanguage] = useState<Language>("en")
+  const [language, setLanguage] = useState<Language>("bn")
   const [currentView, setCurrentView] = useState<"home" | "healthTips">("home")
   const t = translations[language]
 
