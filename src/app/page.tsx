@@ -1,103 +1,137 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+import { useState } from "react"
+import { Sun, Leaf, MapPin, Droplets, Home, ArrowLeft } from "lucide-react"
+import { translations, type Language } from "@/lib/translations"
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+export default function MeghBondhuApp() {
+  const [language, setLanguage] = useState<Language>("en")
+  const [currentView, setCurrentView] = useState<"home" | "healthTips">("home")
+  const t = translations[language]
+
+  const toggleLanguage = () => {
+    setLanguage(language === "en" ? "bn" : "en")
+  }
+
+  const handleServiceClick = (serviceType: string) => {
+    if (serviceType === "health") {
+      setCurrentView("healthTips")
+    }
+  }
+
+  const goBack = () => {
+    setCurrentView("home")
+  }
+
+  const services = [
+    { id: "weather", icon: Sun, title: t.weatherTitle, desc: t.weatherDesc, color: "text-orange-500" },
+    { id: "health", icon: Leaf, title: t.healthTitle, desc: t.healthDesc, color: "text-green-500" },
+    { id: "clinic", icon: MapPin, title: t.clinicTitle, desc: t.clinicDesc, color: "text-blue-500" },
+    { id: "sanitation", icon: Droplets, title: t.sanitationTitle, desc: t.sanitationDesc, color: "text-cyan-500" },
+    { id: "disaster", icon: Home, title: t.disasterTitle, desc: t.disasterDesc, color: "text-red-500" },
+  ]
+
+  if (currentView === "healthTips") {
+    return (
+        <div className="min-h-screen bg-gray-50">
+          <div className="bg-amber-400 px-4 py-6 flex items-center justify-between">
+            <button
+                onClick={goBack}
+                className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
+            >
+              <ArrowLeft className="w-6 h-6" />
+            </button>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-amber-200 rounded-full"></div>
+              </div>
+              <span className="font-semibold text-slate-800 text-lg">{t.healthTipsDetail.title}</span>
+            </div>
+            <button
+                onClick={toggleLanguage}
+                className="px-3 py-1 text-slate-700 hover:bg-amber-300 rounded transition-colors"
+            >
+              {t.languageSwitch}
+            </button>
+          </div>
+
+          <div className="p-4 space-y-6">
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold text-slate-800 mb-4">{t.healthTipsDetail.heatWave.title}</h2>
+              <div className="text-slate-700 leading-relaxed">
+                {t.healthTipsDetail.heatWave.content.split("\n").map((line, index) => (
+                    <p key={index} className="mb-2">
+                      {line}
+                    </p>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold text-slate-800 mb-4">{t.healthTipsDetail.waterFood.title}</h2>
+              <div className="text-slate-700 leading-relaxed">
+                {t.healthTipsDetail.waterFood.content.split("\n").map((line, index) => (
+                    <p key={index} className="mb-2">
+                      {line}
+                    </p>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold text-slate-800 mb-4">{t.healthTipsDetail.childrenElderly.title}</h2>
+              <div className="text-slate-700 leading-relaxed">
+                {t.healthTipsDetail.childrenElderly.content.split("\n").map((line, index) => (
+                    <p key={index} className="mb-2">
+                      {line}
+                    </p>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    )
+  }
+
+  return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="bg-amber-400 px-4 py-6 flex items-center justify-between">
+          <div className="w-6 h-6"></div>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-amber-200 rounded-full"></div>
+            </div>
+            <span className="font-semibold text-slate-800 text-lg">{t.mobileHeader}</span>
+          </div>
+          <button
+              onClick={toggleLanguage}
+              className="px-3 py-1 text-slate-700 hover:bg-amber-300 rounded transition-colors"
+          >
+            {t.languageSwitch}
+          </button>
+        </div>
+
+        <div className="p-4 space-y-4">
+          {services.map((service, index) => (
+              <button
+                  key={index}
+                  onClick={() => handleServiceClick(service.id)}
+                  className="w-full bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className={`p-3 rounded-lg bg-gray-100`}>
+                      <service.icon className={`w-6 h-6 ${service.color}`} />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <h3 className="font-semibold text-slate-800 text-base">{service.title}</h3>
+                      <p className="text-sm text-slate-600 mt-1">{service.desc}</p>
+                    </div>
+                  </div>
+                </div>
+              </button>
+          ))}
+        </div>
+      </div>
+  )
 }
