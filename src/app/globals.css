@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -114,7 +113,6 @@
   --font-bengali: var(--font-bengali);
 }
 
-@custom-variant dark (&:is(.dark *));
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -128,5 +126,3 @@
     font-family: var(--font-bengali);
   }
 }
-
-
