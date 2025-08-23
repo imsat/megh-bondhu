@@ -1,19 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import {
-    Sun,
-    Leaf,
-    MapPin,
-    FileText,
-    ArrowLeft,
-    Calendar,
-    Thermometer,
-    CloudRain,
-    Wind,
-    Eye,
-    Gauge,
-} from "lucide-react"
+import {Sun, Leaf, MapPin, FileText, ArrowLeft, Calendar, Thermometer, CloudRain, Wind, Gauge, Eye} from "lucide-react"
 import { translations, type Language } from "@/lib/translations"
 import rainfallData from "@/data/rainfall.json"
 import minTempData from "@/data/minimum-temp.json"
@@ -53,15 +41,12 @@ export default function MeghBondhuApp() {
         | "dateSelection"
         | "weatherOptions"
         | "temperatureDetail"
-        | "temperatureTrends"
         | "rainfallDetail"
         | "awareness"
     >("home")
     const [selectedYear, setSelectedYear] = useState<string>("")
     const [selectedMonth, setSelectedMonth] = useState<string>("")
     const [selectedDate, setSelectedDate] = useState<string>("")
-    const [startDate, setStartDate] = useState<string>("")
-    const [endDate, setEndDate] = useState<string>("")
     const [todaysWeather, setTodaysWeather] = useState<WeatherData | null>(null)
     const [forecastData, setForecastData] = useState<ForecastData | null>(null)
     const [weatherLoading, setWeatherLoading] = useState(false)
@@ -206,33 +191,6 @@ export default function MeghBondhuApp() {
         }
     }
 
-    const getTemperatureDataForRange = (year: string, month: string, startDay: number, endDay: number) => {
-        const yearNum = Number.parseInt(year)
-        const monthNum = Number.parseInt(month)
-
-        const getMonthName = (monthNum: number) => {
-            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-            return months[monthNum - 1]
-        }
-
-        const minTempEntry = minTempData.find((entry) => entry.Year === yearNum && entry.Month === getMonthName(monthNum))
-        const maxTempEntry = maxTempData.find((entry) => entry.Year === yearNum && entry.Month === getMonthName(monthNum))
-
-        const temperatureData = []
-        for (let day = startDay; day <= endDay; day++) {
-            const minTemp = minTempEntry ? (minTempEntry as Record<string, number | string | boolean>)[day.toString()] || 20 : 20
-            const maxTemp = maxTempEntry ? (maxTempEntry as Record<string, number | string | boolean>)[day.toString()] || 30 : 30
-
-            temperatureData.push({
-                day,
-                minTemperature: typeof minTemp === "number" && minTemp !== null ? minTemp : 20,
-                maxTemperature: typeof maxTemp === "number" && maxTemp !== null ? maxTemp : 30,
-            })
-        }
-
-        return temperatureData
-    }
-
     const toggleLanguage = () => {
         setLanguage(language === "en" ? "bn" : "en")
     }
@@ -254,8 +212,6 @@ export default function MeghBondhuApp() {
             setCurrentView("dateSelection")
         } else if (currentView === "temperatureDetail" || currentView === "rainfallDetail") {
             setCurrentView("weatherOptions")
-        } else if (currentView === "temperatureTrends") {
-            setCurrentView("temperatureDetail")
         }
     }
 
@@ -267,10 +223,6 @@ export default function MeghBondhuApp() {
 
     const handleTemperatureClick = () => {
         setCurrentView("temperatureDetail")
-    }
-
-    const handleTemperatureTrendsClick = () => {
-        setCurrentView("temperatureTrends")
     }
 
     const handleRainfallClick = () => {
@@ -557,134 +509,6 @@ export default function MeghBondhuApp() {
         )
     }
 
-    if (currentView === "temperatureTrends") {
-        const startDay = Number.parseInt(startDate) || 1
-        const endDay = Number.parseInt(endDate) || 7
-        const temperatureData = getTemperatureDataForRange(selectedYear, selectedMonth, startDay, endDay)
-
-        return (
-            <div className="min-h-screen bg-gray-50">
-                <div className="bg-amber-400 px-4 py-6 flex items-center justify-between">
-                    <button
-                        onClick={goBack}
-                        className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
-                    >
-                        <ArrowLeft className="w-6 h-6" />
-                    </button>
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
-                            <Thermometer className="w-6 h-6 text-amber-200" />
-                        </div>
-                        <span className="font-semibold text-slate-800 text-lg">{t.temperatureTrends}</span>
-                    </div>
-                    <button
-                        onClick={toggleLanguage}
-                        className="px-3 py-1 text-slate-700 hover:bg-amber-300 rounded transition-colors"
-                    >
-                        {t.languageSwitch}
-                    </button>
-                </div>
-
-                <div className="p-4 space-y-4">
-                    {/* Date Range Selection */}
-                    <div className="bg-white rounded-lg shadow-sm p-4">
-                        <h3 className="font-medium text-slate-800 mb-4">{t.selectDateRange}</h3>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">{t.startDay}</label>
-                                <select
-                                    value={startDate}
-                                    onChange={(e) => setStartDate(e.target.value)}
-                                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"
-                                >
-                                    <option value="">{t.select}</option>
-                                    {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-                                        <option key={day} value={day}>
-                                            {day}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">{t.endDay}</label>
-                                <select
-                                    value={endDate}
-                                    onChange={(e) => setEndDate(e.target.value)}
-                                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"
-                                >
-                                    <option value="">{t.select}</option>
-                                    {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-                                        <option key={day} value={day}>
-                                            {day}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                        <p className="text-sm text-slate-600 mt-2">
-                            {t.period} {selectedMonth}/{selectedYear}
-                        </p>
-                    </div>
-
-                    {/* Temperature Chart */}
-                    {startDate && endDate && (
-                        <div className="bg-white rounded-lg shadow-sm p-4">
-                            <h3 className="font-medium text-slate-800 mb-4">{t.temperatureVariation}</h3>
-                            <div className="space-y-4">
-                                {temperatureData.map((data, index) => (
-                                    <div key={index} className="flex items-center gap-4">
-                                        <div className="w-8 text-sm text-slate-600 font-medium">{data.day}</div>
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs text-red-600">
-                          {t.maxTemp} {data.maxTemperature}°C
-                        </span>
-                                                <span className="text-xs text-blue-600">
-                          {t.minTemp} {data.minTemperature}°C
-                        </span>
-                                            </div>
-                                            <div className="relative h-6 bg-gray-100 rounded-full overflow-hidden">
-                                                {/* Temperature range bar */}
-                                                <div
-                                                    className="absolute h-full bg-gradient-to-r from-blue-400 to-red-400 rounded-full"
-                                                    style={{
-                                                        left: `${Math.max(0, (data.minTemperature - 5) * 2)}%`,
-                                                        width: `${Math.min(100, (data.maxTemperature - data.minTemperature) * 2)}%`,
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Temperature Statistics */}
-                    {startDate && endDate && (
-                        <div className="bg-white rounded-lg shadow-sm p-4">
-                            <h3 className="font-medium text-slate-800 mb-4">{t.periodStatistics}</h3>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="text-center p-3 bg-red-50 rounded-lg">
-                                    <p className="text-sm text-slate-600">{t.highestMax}</p>
-                                    <p className="text-lg font-semibold text-red-600">
-                                        {Math.max(...temperatureData.map((d) => d.maxTemperature))}°C
-                                    </p>
-                                </div>
-                                <div className="text-center p-3 bg-blue-50 rounded-lg">
-                                    <p className="text-sm text-slate-600">{t.lowestMin}</p>
-                                    <p className="text-lg font-semibold text-blue-600">
-                                        {Math.min(...temperatureData.map((d) => d.minTemperature))}°C
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
-        )
-    }
-
     if (currentView === "temperatureDetail") {
         const tempCondition = getTemperatureCondition()
         const weatherData = getWeatherDataForDate(selectedYear, selectedMonth, selectedDate)
@@ -736,13 +560,6 @@ export default function MeghBondhuApp() {
                             </div>
                         </div>
                     </div>
-
-                    <button
-                        onClick={handleTemperatureTrendsClick}
-                        className="w-full bg-amber-500 text-white py-3 rounded-lg font-medium hover:bg-amber-600 transition-colors"
-                    >
-                        {t.viewTemperatureTrends}
-                    </button>
 
                     {tempData && (
                         <div className="bg-white rounded-lg shadow-sm p-6">
@@ -883,13 +700,7 @@ export default function MeghBondhuApp() {
     }
 
     if (currentView === "awareness") {
-        const pdfList = [
-            { name: "Climate Change Awareness", file: "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf", size: "2.3 MB" },
-            { name: "Disaster Preparedness Guide", file: "https://www.princexml.com/samples/invoice-colorful/invoicesample.pdf", size: "1.8 MB" },
-            { name: "Health and Safety Tips", file: "https://www.princexml.com/samples/invoice-colorful/invoicesample.pdf", size: "3.1 MB" },
-            { name: "Environmental Protection", file: "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf", size: "2.7 MB" },
-            { name: "Community Engagement", file: "https://www.princexml.com/samples/invoice-colorful/invoicesample.pdf", size: "1.5 MB" },
-        ]
+        const documentList = t.awarenessDetail.documents
 
         return (
             <div className="min-h-screen bg-gray-50">
@@ -916,11 +727,11 @@ export default function MeghBondhuApp() {
 
                 <div className="p-4 space-y-4">
                     <div className="bg-white rounded-lg shadow-sm p-4">
-                        <h3 className="font-medium text-slate-800 mb-4">Available Documents</h3>
+                        <h3 className="font-medium text-slate-800 mb-4">{t.awarenessDetail.title}</h3>
                         <div className="space-y-3">
-                            {pdfList.map((pdf, index) => (
+                            {documentList.map((document, index) => (
                                 <a
-                                    href={pdf.file}
+                                    href={document.file}
                                     key={index}
                                     className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                                 >
@@ -929,12 +740,12 @@ export default function MeghBondhuApp() {
                                             <FileText className="w-5 h-5 text-red-600" />
                                         </div>
                                         <div>
-                                            <h4 className="font-medium text-slate-800">{pdf.name}</h4>
-                                            <p className="text-sm text-slate-600">{pdf.size}</p>
+                                            <h4 className="font-medium text-slate-800">{document.title}</h4>
+                                            <p className="text-sm text-slate-600">{document.description}</p>
                                         </div>
                                     </div>
-                                    <a href={pdf.file} className="px-3 py-1 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 transition-colors">
-                                        View
+                                    <a href={document.file} className="px-3 py-1 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 transition-colors">
+                                        {t.awarenessDetail.viewButton}
                                     </a>
                                 </a>
                             ))}

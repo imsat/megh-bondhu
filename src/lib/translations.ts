@@ -2,7 +2,7 @@ export const translations = {
     en: {
         title: "MeghBondhu",
         subtitle: "Community Engagement",
-        mobileHeader: "বেবরবন্ধু",
+        mobileHeader: "MeghBondhu",
         weatherTitle: "Today's Weather",
         weatherDesc: "Get current weather conditions",
         futureWeatherTitle: "Future Weather Information",
@@ -11,6 +11,38 @@ export const translations = {
         clinicDesc: "Find nearby clinics",
         awarenessTitle: "Awareness",
         awarenessDesc: "View awareness materials and PDFs",
+        awarenessDetail: {
+            title: "Available Documents",
+            viewButton: "View",
+            documents: [
+                {
+                    title: "Climate Change Awareness Guide",
+                    description: "Comprehensive guide on climate change impacts and adaptation strategies",
+                    file: "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+
+                },
+                {
+                    title: "Community Health Guidelines",
+                    description: "Essential health practices for community wellbeing",
+                    file: "https://www.princexml.com/samples/invoice-colorful/invoicesample.pdf"
+                },
+                {
+                    title: "Disaster Preparedness Manual",
+                    description: "Step-by-step guide for disaster preparedness and response",
+                    file: "https://www.princexml.com/samples/invoice-colorful/invoicesample.pdf"
+                },
+                {
+                    title: "Renewable Energy Information",
+                    description: "Information about renewable energy options and benefits",
+                    file: "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+                },
+                {
+                    title: "Water Safety and Sanitation",
+                    description: "Guidelines for safe water practices and sanitation",
+                    file: "https://www.princexml.com/samples/invoice-colorful/invoicesample.pdf"
+                },
+            ],
+        },
         languageSwitch: "বাংলা",
         hourlyForecast: "Hourly Forecast",
         weatherDataFor: "Weather Data for",
@@ -117,7 +149,7 @@ export const translations = {
     bn: {
         title: "মেঘবন্ধু",
         subtitle: "কমিউনিটি এনগেজমেন্ট",
-        mobileHeader: "বেবরবন্ধু",
+        mobileHeader: "মেঘবন্ধু",
         weatherTitle: "আজকের আবহাওয়া",
         weatherDesc: "বর্তমান আবহাওয়ার অবস্থা জানুন",
         futureWeatherTitle: "ভবিষ্যতের আবহাওয়ার তথ্য",
@@ -126,6 +158,37 @@ export const translations = {
         clinicDesc: "কাছাকাছি ক্লিনিক খুঁজুন",
         awarenessTitle: "সচেতনতা",
         awarenessDesc: "সচেতনতামূলক উপকরণ এবং পিডিএফ দেখুন",
+        awarenessDetail: {
+            title: "উপলব্ধ নথিপত্র",
+            viewButton: "দেখুন",
+            documents: [
+                {
+                    title: "জলবায়ু পরিবর্তন সচেতনতা গাইড",
+                    description: "জলবায়ু পরিবর্তনের প্রভাব এবং অভিযোজন কৌশলের বিস্তৃত গাইড",
+                    file: "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+                },
+                {
+                    title: "কমিউনিটি স্বাস্থ্য নির্দেশিকা",
+                    description: "কমিউনিটির কল্যাণের জন্য প্রয়োজনীয় স্বাস্থ্য অনুশীলন",
+                    file: "https://www.princexml.com/samples/invoice-colorful/invoicesample.pdf"
+                },
+                {
+                    title: "দুর্যোগ প্রস্তুতি ম্যানুয়াল",
+                    description: "দুর্যোগ প্রস্তুতি এবং প্রতিক্রিয়ার জন্য ধাপে ধাপে গাইড",
+                    file: "https://www.princexml.com/samples/invoice-colorful/invoicesample.pdf"
+                },
+                {
+                    title: "নবায়নযোগ্য শক্তির তথ্য",
+                    description: "নবায়নযোগ্য শক্তির বিকল্প এবং সুবিধা সম্পর্কে তথ্য",
+                    file: "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+                },
+                {
+                    title: "পানির নিরাপত্তা ও স্যানিটেশন",
+                    description: "নিরাপদ পানি অনুশীলন এবং স্যানিটেশনের জন্য নির্দেশিকা",
+                    file: "https://www.princexml.com/samples/invoice-colorful/invoicesample.pdf"
+                },
+            ],
+        },
         languageSwitch: "English",
         hourlyForecast: "ঘণ্টাভিত্তিক পূর্বাভাস",
         weatherDataFor: "আবহাওয়ার তথ্য",
