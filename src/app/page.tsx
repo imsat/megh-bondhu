@@ -196,12 +196,12 @@ export default function MeghBondhuApp() {
     }
 
     const handleServiceClick = (serviceType: string) => {
-        if (serviceType === "futureWeather") {
-            setCurrentView("dateSelection")
-        } else if (serviceType === "weather") {
+        if (serviceType === "weather") {
             setCurrentView("todaysWeather")
+        } else if (serviceType === "futureWeather") {
+            // setCurrentView("dateSelection")
         } else if (serviceType === "awareness") {
-            setCurrentView("awareness")
+            // setCurrentView("awareness")
         }
     }
 
