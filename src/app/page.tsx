@@ -1,50 +1,236 @@
 "use client"
 
-import {useState} from "react"
-import {Sun, Leaf, MapPin, Droplets, Home, ArrowLeft, Calendar, Thermometer, CloudRain} from "lucide-react"
-import {translations, type Language} from "@/lib/translations"
+import { useState, useEffect } from "react"
+import {
+    Sun,
+    Leaf,
+    MapPin,
+    FileText,
+    ArrowLeft,
+    Calendar,
+    Thermometer,
+    CloudRain,
+    Wind,
+    Eye,
+    Gauge,
+} from "lucide-react"
+import { translations, type Language } from "@/lib/translations"
 import rainfallData from "@/data/rainfall.json"
 import minTempData from "@/data/minimum-temp.json"
 import maxTempData from "@/data/maximum-temp.json"
 
+interface WeatherData {
+    temperature: number
+    feelsLike: number
+    humidity: number
+    windSpeed: number
+    pressure: number
+    visibility: number
+    uvIndex: number
+    description: string
+    icon: string
+}
+
+interface HourlyForecast {
+    time: string
+    temperature: number
+    condition: string
+    icon: string
+    chanceOfRain: number
+}
+
+interface ForecastData {
+    current: WeatherData
+    hourly: HourlyForecast[]
+}
+
 export default function MeghBondhuApp() {
-    const [language, setLanguage] = useState<Language>("en")
+    const [language, setLanguage] = useState<Language>("bn")
     const [currentView, setCurrentView] = useState<
-        "home" | "futureWeather" | "dateSelection" | "weatherOptions" | "temperatureDetail" | "rainfallDetail"
+        | "home"
+        | "todaysWeather"
+        | "futureWeather"
+        | "dateSelection"
+        | "weatherOptions"
+        | "temperatureDetail"
+        | "temperatureTrends"
+        | "rainfallDetail"
+        | "awareness"
     >("home")
     const [selectedYear, setSelectedYear] = useState<string>("")
     const [selectedMonth, setSelectedMonth] = useState<string>("")
     const [selectedDate, setSelectedDate] = useState<string>("")
+    const [startDate, setStartDate] = useState<string>("")
+    const [endDate, setEndDate] = useState<string>("")
+    const [todaysWeather, setTodaysWeather] = useState<WeatherData | null>(null)
+    const [forecastData, setForecastData] = useState<ForecastData | null>(null)
+    const [weatherLoading, setWeatherLoading] = useState(false)
+    const [weatherError, setWeatherError] = useState<string | null>(null)
     const t = translations[language]
+
+    const fetchTodaysWeather = async () => {
+        setWeatherLoading(true)
+        setWeatherError(null)
+
+        try {
+            const API_KEY = process.env.NEXT_PUBLIC_WEATHERAPI_KEY || "demo_key"
+            const city = process.env.NEXT_PUBLIC_WEATHER_LOCATION || "Dhaka" // Default to Dhaka, Bangladesh
+
+            const response = await fetch(
+                `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}&days=1&aqi=no&alerts=no`,
+            )
+
+            if (!response.ok) {
+                throw new Error("Weather data unavailable")
+            }
+
+            const data = await response.json()
+
+            const currentWeather: WeatherData = {
+                temperature: Math.round(data.current.temp_c),
+                feelsLike: Math.round(data.current.feelslike_c),
+                humidity: data.current.humidity,
+                windSpeed: Math.round(data.current.wind_kph),
+                pressure: Math.round(data.current.pressure_mb),
+                visibility: Math.round(data.current.vis_km),
+                uvIndex: Math.round(data.current.uv),
+                description: data.current.condition.text.toLowerCase(),
+                icon: data.current.condition.icon,
+            }
+
+            const hourly: HourlyForecast[] = data.forecast.forecastday[0].hour.map((hour: any) => ({
+                time: hour.time,
+                temperature: Math.round(hour.temp_c),
+                condition: hour.condition.text,
+                icon: hour.condition.icon,
+                chanceOfRain: hour.chance_of_rain,
+            }))
+
+            setTodaysWeather(currentWeather)
+            setForecastData({
+                current: currentWeather,
+                hourly: hourly,
+            })
+        } catch (error) {
+            console.error("Weather fetch error:", error)
+            setWeatherError("Unable to load weather data")
+            const demoWeather: WeatherData = {
+                temperature: 28,
+                feelsLike: 32,
+                humidity: 75,
+                windSpeed: 12,
+                pressure: 1013,
+                visibility: 8,
+                uvIndex: 6,
+                description: "partly cloudy",
+                icon: "//cdn.weatherapi.com/weather/64x64/day/116.png",
+            }
+
+            const demoHourly: HourlyForecast[] = [
+                {
+                    time: "2025-01-21 09:00",
+                    temperature: 26,
+                    condition: "Partly cloudy",
+                    icon: "//cdn.weatherapi.com/weather/64x64/day/116.png",
+                    chanceOfRain: 10,
+                },
+                {
+                    time: "2025-01-21 12:00",
+                    temperature: 30,
+                    condition: "Sunny",
+                    icon: "//cdn.weatherapi.com/weather/64x64/day/113.png",
+                    chanceOfRain: 5,
+                },
+                {
+                    time: "2025-01-21 15:00",
+                    temperature: 32,
+                    condition: "Partly cloudy",
+                    icon: "//cdn.weatherapi.com/weather/64x64/day/116.png",
+                    chanceOfRain: 15,
+                },
+                {
+                    time: "2025-01-21 18:00",
+                    temperature: 28,
+                    condition: "Clear",
+                    icon: "//cdn.weatherapi.com/weather/64x64/night/113.png",
+                    chanceOfRain: 0,
+                },
+                {
+                    time: "2025-01-21 21:00",
+                    temperature: 25,
+                    condition: "Clear",
+                    icon: "//cdn.weatherapi.com/weather/64x64/night/113.png",
+                    chanceOfRain: 0,
+                },
+            ]
+
+            setTodaysWeather(demoWeather)
+            setForecastData({
+                current: demoWeather,
+                hourly: demoHourly,
+            })
+        } finally {
+            setWeatherLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        if (currentView === "todaysWeather" && !todaysWeather) {
+            fetchTodaysWeather()
+        }
+    }, [currentView, todaysWeather])
 
     const getWeatherDataForDate = (year: string, month: string, date: string) => {
         const yearNum = Number.parseInt(year)
         const monthNum = Number.parseInt(month)
         const dateNum = Number.parseInt(date)
 
-        // Helper function to get month name from number
         const getMonthName = (monthNum: number) => {
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
             return months[monthNum - 1]
         }
 
-        // Find rainfall data
         const rainfallEntry = rainfallData.find((entry) => entry.Year === yearNum && entry.Month === getMonthName(monthNum))
         const rainfall = rainfallEntry ? (rainfallEntry as Record<string, number | string | boolean>)[dateNum.toString()] || 0 : 0
 
-        // Find minimum temperature data
         const minTempEntry = minTempData.find((entry) => entry.Year === yearNum && entry.Month === getMonthName(monthNum))
-        const minTemperature = minTempEntry ? (minTempEntry as Record<string, number | string | boolean>)[dateNum.toString()] || 10 : 10
+        const minTemperature = minTempEntry ? (minTempEntry as Record<string, number | string | boolean>)[dateNum.toString()] || 20 : 20
 
-        // Find maximum temperature data
         const maxTempEntry = maxTempData.find((entry) => entry.Year === yearNum && entry.Month === getMonthName(monthNum))
         const maxTemperature = maxTempEntry ? (maxTempEntry as Record<string, number | string | boolean>)[dateNum.toString()] || 30 : 30
 
         return {
             maxTemperature: typeof maxTemperature === "number" && maxTemperature !== null ? maxTemperature : 30,
-            minTemperature: typeof minTemperature === "number" && minTemperature !== null ? minTemperature : 10,
+            minTemperature: typeof minTemperature === "number" && minTemperature !== null ? minTemperature : 20,
             rainfall: typeof rainfall === "number" && rainfall !== null ? rainfall : 0,
         }
+    }
+
+    const getTemperatureDataForRange = (year: string, month: string, startDay: number, endDay: number) => {
+        const yearNum = Number.parseInt(year)
+        const monthNum = Number.parseInt(month)
+
+        const getMonthName = (monthNum: number) => {
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            return months[monthNum - 1]
+        }
+
+        const minTempEntry = minTempData.find((entry) => entry.Year === yearNum && entry.Month === getMonthName(monthNum))
+        const maxTempEntry = maxTempData.find((entry) => entry.Year === yearNum && entry.Month === getMonthName(monthNum))
+
+        const temperatureData = []
+        for (let day = startDay; day <= endDay; day++) {
+            const minTemp = minTempEntry ? (minTempEntry as Record<string, number | string | boolean>)[day.toString()] || 20 : 20
+            const maxTemp = maxTempEntry ? (maxTempEntry as Record<string, number | string | boolean>)[day.toString()] || 30 : 30
+
+            temperatureData.push({
+                day,
+                minTemperature: typeof minTemp === "number" && minTemp !== null ? minTemp : 20,
+                maxTemperature: typeof maxTemp === "number" && maxTemp !== null ? maxTemp : 30,
+            })
+        }
+
+        return temperatureData
     }
 
     const toggleLanguage = () => {
@@ -54,16 +240,22 @@ export default function MeghBondhuApp() {
     const handleServiceClick = (serviceType: string) => {
         if (serviceType === "futureWeather") {
             setCurrentView("dateSelection")
+        } else if (serviceType === "weather") {
+            setCurrentView("todaysWeather")
+        } else if (serviceType === "awareness") {
+            setCurrentView("awareness")
         }
     }
 
     const goBack = () => {
-        if (currentView === "dateSelection") {
+        if (currentView === "dateSelection" || currentView === "todaysWeather" || currentView === "awareness") {
             setCurrentView("home")
         } else if (currentView === "weatherOptions") {
             setCurrentView("dateSelection")
         } else if (currentView === "temperatureDetail" || currentView === "rainfallDetail") {
             setCurrentView("weatherOptions")
+        } else if (currentView === "temperatureTrends") {
+            setCurrentView("temperatureDetail")
         }
     }
 
@@ -75,6 +267,10 @@ export default function MeghBondhuApp() {
 
     const handleTemperatureClick = () => {
         setCurrentView("temperatureDetail")
+    }
+
+    const handleTemperatureTrendsClick = () => {
+        setCurrentView("temperatureTrends")
     }
 
     const handleRainfallClick = () => {
@@ -103,7 +299,7 @@ export default function MeghBondhuApp() {
     }
 
     const services = [
-        {id: "weather", icon: Sun, title: t.weatherTitle, desc: t.weatherDesc, color: "text-orange-500"},
+        { id: "weather", icon: Sun, title: t.weatherTitle, desc: t.weatherDesc, color: "text-orange-500" },
         {
             id: "futureWeather",
             icon: Leaf,
@@ -111,10 +307,166 @@ export default function MeghBondhuApp() {
             desc: t.futureWeatherDesc,
             color: "text-green-500",
         },
-        {id: "clinic", icon: MapPin, title: t.clinicTitle, desc: t.clinicDesc, color: "text-blue-500"},
-        {id: "sanitation", icon: Droplets, title: t.sanitationTitle, desc: t.sanitationDesc, color: "text-cyan-500"},
-        {id: "disaster", icon: Home, title: t.disasterTitle, desc: t.disasterDesc, color: "text-red-500"},
+        { id: "awareness", icon: FileText, title: t.awarenessTitle, desc: t.awarenessDesc, color: "text-purple-500" },
+        { id: "clinic", icon: MapPin, title: t.clinicTitle, desc: t.clinicDesc, color: "text-blue-500" },
     ]
+
+    if (currentView === "todaysWeather") {
+        return (
+            <div className="min-h-screen bg-gray-50">
+                <div className="bg-amber-400 px-4 py-6 flex items-center justify-between">
+                    <button
+                        onClick={goBack}
+                        className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
+                    >
+                        <ArrowLeft className="w-6 h-6" />
+                    </button>
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
+                            <Sun className="w-6 h-6 text-amber-200" />
+                        </div>
+                        <span className="font-semibold text-slate-800 text-lg">{t.todaysWeatherDetail.title}</span>
+                    </div>
+                    <button
+                        onClick={toggleLanguage}
+                        className="px-3 py-1 text-slate-700 hover:bg-amber-300 rounded transition-colors"
+                    >
+                        {t.languageSwitch}
+                    </button>
+                </div>
+
+                <div className="p-4 space-y-4">
+                    {weatherLoading && (
+                        <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500 mx-auto mb-4"></div>
+                            <p className="text-slate-600">{t.todaysWeatherDetail.loading}</p>
+                        </div>
+                    )}
+
+                    {weatherError && !todaysWeather && (
+                        <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+                            <p className="text-red-600 mb-4">{t.todaysWeatherDetail.error}</p>
+                            <button
+                                onClick={fetchTodaysWeather}
+                                className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
+                            >
+                                Retry
+                            </button>
+                        </div>
+                    )}
+
+                    {todaysWeather && (
+                        <>
+                            {/* Main Temperature Card */}
+                            <div className="bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg shadow-sm p-6 text-white">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h2 className="text-3xl font-bold">{todaysWeather.temperature}°C</h2>
+                                        <p className="text-blue-100 capitalize">{todaysWeather.description}</p>
+                                        <p className="text-blue-100 text-sm">
+                                            {t.todaysWeatherDetail.feelsLike}: {todaysWeather.feelsLike}°C
+                                        </p>
+                                    </div>
+                                    <div className="text-right">
+                                        <img src={`https:${todaysWeather.icon}`} alt="Weather icon" className="w-16 h-16" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Weather Details Grid */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="bg-white rounded-lg shadow-sm p-4">
+                                    <div className="flex items-center gap-3">
+                                        <FileText className="w-5 h-5 text-blue-500" />
+                                        <div>
+                                            <p className="text-sm text-slate-600">{t.todaysWeatherDetail.humidity}</p>
+                                            <p className="font-semibold text-slate-800">{todaysWeather.humidity}%</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-lg shadow-sm p-4">
+                                    <div className="flex items-center gap-3">
+                                        <Wind className="w-5 h-5 text-green-500" />
+                                        <div>
+                                            <p className="text-sm text-slate-600">{t.todaysWeatherDetail.windSpeed}</p>
+                                            <p className="font-semibold text-slate-800">{todaysWeather.windSpeed} km/h</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-lg shadow-sm p-4">
+                                    <div className="flex items-center gap-3">
+                                        <Gauge className="w-5 h-5 text-purple-500" />
+                                        <div>
+                                            <p className="text-sm text-slate-600">{t.todaysWeatherDetail.pressure}</p>
+                                            <p className="font-semibold text-slate-800">{todaysWeather.pressure} hPa</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-lg shadow-sm p-4">
+                                    <div className="flex items-center gap-3">
+                                        <Eye className="w-5 h-5 text-gray-500" />
+                                        <div>
+                                            <p className="text-sm text-slate-600">{t.todaysWeatherDetail.visibility}</p>
+                                            <p className="font-semibold text-slate-800">{todaysWeather.visibility} km</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* UV Index */}
+                            <div className="bg-white rounded-lg shadow-sm p-4">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-slate-600">{t.todaysWeatherDetail.uvIndex}</span>
+                                    <span className="font-semibold text-slate-800">{todaysWeather.uvIndex}</span>
+                                </div>
+                            </div>
+
+                            {/* Hourly Forecast */}
+                            {forecastData && forecastData.hourly.length > 0 && (
+                                <div className="bg-white rounded-lg shadow-sm p-4">
+                                    <h3 className="font-semibold text-slate-800 mb-4">{t.hourlyForecast}</h3>
+                                    <div className="space-y-3">
+                                        {forecastData.hourly.map((hour, index) => {
+                                            const time = new Date(hour.time)
+                                            const timeStr = time.toLocaleTimeString("en-US", {
+                                                hour: "numeric",
+                                                minute: "2-digit",
+                                                hour12: true,
+                                            })
+
+                                            return (
+                                                <div
+                                                    key={hour.time}
+                                                    className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0"
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-16 text-sm font-medium text-slate-700">{timeStr}</div>
+                                                    </div>
+
+                                                    <div className="flex items-center gap-3">
+                                                        <img src={`https:${hour.icon}`} alt={hour.condition} className="w-8 h-8" />
+                                                        <div className="text-right">
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="font-semibold text-slate-800">{hour.temperature}°C</span>
+                                                            </div>
+                                                            <div className="text-xs text-blue-600">{hour.chanceOfRain}% rain</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            </div>
+        )
+    }
 
     if (currentView === "dateSelection") {
         return (
@@ -124,11 +476,11 @@ export default function MeghBondhuApp() {
                         onClick={goBack}
                         className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
                     >
-                        <ArrowLeft className="w-6 h-6"/>
+                        <ArrowLeft className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
-                            <Calendar className="w-6 h-6 text-amber-200"/>
+                            <Calendar className="w-6 h-6 text-amber-200" />
                         </div>
                         <span className="font-semibold text-slate-800 text-lg">{t.futureWeatherDetail.selectDate}</span>
                     </div>
@@ -144,15 +496,14 @@ export default function MeghBondhuApp() {
                     <div className="bg-white rounded-lg shadow-sm p-6">
                         <div className="space-y-4">
                             <div>
-                                <label
-                                    className="block text-sm font-medium text-slate-700 mb-2">{t.futureWeatherDetail.year}</label>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">{t.futureWeatherDetail.year}</label>
                                 <select
                                     value={selectedYear}
                                     onChange={(e) => setSelectedYear(e.target.value)}
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                                 >
                                     <option value="">{t.futureWeatherDetail.selectYear}</option>
-                                    {Array.from({length: 2}, (_, i) => 2026 + i).map((year) => (
+                                    {Array.from({ length: 2 }, (_, i) => 2026 + i).map((year) => (
                                         <option key={year} value={year}>
                                             {year}
                                         </option>
@@ -161,15 +512,14 @@ export default function MeghBondhuApp() {
                             </div>
 
                             <div>
-                                <label
-                                    className="block text-sm font-medium text-slate-700 mb-2">{t.futureWeatherDetail.month}</label>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">{t.futureWeatherDetail.month}</label>
                                 <select
                                     value={selectedMonth}
                                     onChange={(e) => setSelectedMonth(e.target.value)}
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                                 >
                                     <option value="">{t.futureWeatherDetail.selectMonth}</option>
-                                    {Array.from({length: 12}, (_, i) => i + 1).map((month) => (
+                                    {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
                                         <option key={month} value={month}>
                                             {month}
                                         </option>
@@ -178,15 +528,14 @@ export default function MeghBondhuApp() {
                             </div>
 
                             <div>
-                                <label
-                                    className="block text-sm font-medium text-slate-700 mb-2">{t.futureWeatherDetail.date}</label>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">{t.futureWeatherDetail.date}</label>
                                 <select
                                     value={selectedDate}
                                     onChange={(e) => setSelectedDate(e.target.value)}
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                                 >
                                     <option value="">{t.futureWeatherDetail.selectDate}</option>
-                                    {Array.from({length: 31}, (_, i) => i + 1).map((date) => (
+                                    {Array.from({ length: 31 }, (_, i) => i + 1).map((date) => (
                                         <option key={date} value={date}>
                                             {date}
                                         </option>
@@ -203,6 +552,134 @@ export default function MeghBondhuApp() {
                             </button>
                         </div>
                     </div>
+                </div>
+            </div>
+        )
+    }
+
+    if (currentView === "temperatureTrends") {
+        const startDay = Number.parseInt(startDate) || 1
+        const endDay = Number.parseInt(endDate) || 7
+        const temperatureData = getTemperatureDataForRange(selectedYear, selectedMonth, startDay, endDay)
+
+        return (
+            <div className="min-h-screen bg-gray-50">
+                <div className="bg-amber-400 px-4 py-6 flex items-center justify-between">
+                    <button
+                        onClick={goBack}
+                        className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
+                    >
+                        <ArrowLeft className="w-6 h-6" />
+                    </button>
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
+                            <Thermometer className="w-6 h-6 text-amber-200" />
+                        </div>
+                        <span className="font-semibold text-slate-800 text-lg">{t.temperatureTrends}</span>
+                    </div>
+                    <button
+                        onClick={toggleLanguage}
+                        className="px-3 py-1 text-slate-700 hover:bg-amber-300 rounded transition-colors"
+                    >
+                        {t.languageSwitch}
+                    </button>
+                </div>
+
+                <div className="p-4 space-y-4">
+                    {/* Date Range Selection */}
+                    <div className="bg-white rounded-lg shadow-sm p-4">
+                        <h3 className="font-medium text-slate-800 mb-4">{t.selectDateRange}</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">{t.startDay}</label>
+                                <select
+                                    value={startDate}
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"
+                                >
+                                    <option value="">{t.select}</option>
+                                    {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                                        <option key={day} value={day}>
+                                            {day}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">{t.endDay}</label>
+                                <select
+                                    value={endDate}
+                                    onChange={(e) => setEndDate(e.target.value)}
+                                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"
+                                >
+                                    <option value="">{t.select}</option>
+                                    {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                                        <option key={day} value={day}>
+                                            {day}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                        <p className="text-sm text-slate-600 mt-2">
+                            {t.period} {selectedMonth}/{selectedYear}
+                        </p>
+                    </div>
+
+                    {/* Temperature Chart */}
+                    {startDate && endDate && (
+                        <div className="bg-white rounded-lg shadow-sm p-4">
+                            <h3 className="font-medium text-slate-800 mb-4">{t.temperatureVariation}</h3>
+                            <div className="space-y-4">
+                                {temperatureData.map((data, index) => (
+                                    <div key={index} className="flex items-center gap-4">
+                                        <div className="w-8 text-sm text-slate-600 font-medium">{data.day}</div>
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs text-red-600">
+                          {t.maxTemp} {data.maxTemperature}°C
+                        </span>
+                                                <span className="text-xs text-blue-600">
+                          {t.minTemp} {data.minTemperature}°C
+                        </span>
+                                            </div>
+                                            <div className="relative h-6 bg-gray-100 rounded-full overflow-hidden">
+                                                {/* Temperature range bar */}
+                                                <div
+                                                    className="absolute h-full bg-gradient-to-r from-blue-400 to-red-400 rounded-full"
+                                                    style={{
+                                                        left: `${Math.max(0, (data.minTemperature - 5) * 2)}%`,
+                                                        width: `${Math.min(100, (data.maxTemperature - data.minTemperature) * 2)}%`,
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Temperature Statistics */}
+                    {startDate && endDate && (
+                        <div className="bg-white rounded-lg shadow-sm p-4">
+                            <h3 className="font-medium text-slate-800 mb-4">{t.periodStatistics}</h3>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="text-center p-3 bg-red-50 rounded-lg">
+                                    <p className="text-sm text-slate-600">{t.highestMax}</p>
+                                    <p className="text-lg font-semibold text-red-600">
+                                        {Math.max(...temperatureData.map((d) => d.maxTemperature))}°C
+                                    </p>
+                                </div>
+                                <div className="text-center p-3 bg-blue-50 rounded-lg">
+                                    <p className="text-sm text-slate-600">{t.lowestMin}</p>
+                                    <p className="text-lg font-semibold text-blue-600">
+                                        {Math.min(...temperatureData.map((d) => d.minTemperature))}°C
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         )
@@ -225,11 +702,11 @@ export default function MeghBondhuApp() {
                         onClick={goBack}
                         className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
                     >
-                        <ArrowLeft className="w-6 h-6"/>
+                        <ArrowLeft className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
-                            <Thermometer className="w-6 h-6 text-amber-200"/>
+                            <Thermometer className="w-6 h-6 text-amber-200" />
                         </div>
                         <span className="font-semibold text-slate-800 text-lg">
               {t.futureWeatherDetail.temperatureDetail.title}
@@ -246,38 +723,38 @@ export default function MeghBondhuApp() {
                 <div className="p-4 space-y-4">
                     <div className="bg-white rounded-lg shadow-sm p-4">
                         <h3 className="font-medium text-slate-800 mb-2">
-                            Weather Data for {selectedDate}/{selectedMonth}/{selectedYear}
+                            {t.weatherDataFor} {selectedDate}/{selectedMonth}/{selectedYear}
                         </h3>
                         <div className="grid grid-cols-2 gap-4 text-sm">
                             <div>
-                                <span className="text-slate-600">Max Temperature:</span>
+                                <span className="text-slate-600">{t.maxTemp}:</span>
                                 <span className="font-semibold text-red-600 ml-2">{weatherData.maxTemperature}°C</span>
                             </div>
                             <div>
-                                <span className="text-slate-600">Min Temperature:</span>
+                                <span className="text-slate-600">{t.minTemp}:</span>
                                 <span className="font-semibold text-blue-600 ml-2">{weatherData.minTemperature}°C</span>
                             </div>
                         </div>
                     </div>
 
+                    <button
+                        onClick={handleTemperatureTrendsClick}
+                        className="w-full bg-amber-500 text-white py-3 rounded-lg font-medium hover:bg-amber-600 transition-colors"
+                    >
+                        {t.viewTemperatureTrends}
+                    </button>
+
                     {tempData && (
                         <div className="bg-white rounded-lg shadow-sm p-6">
                             <h2 className="text-lg font-semibold text-slate-800 mb-4">{tempData.title}</h2>
+
                             <div className="space-y-4">
                                 {Object.entries(tempData.sections).map(([key, content]) => (
                                     <div key={key} className="border-b border-gray-100 pb-4 last:border-b-0">
-                                        <div
-                                            className="whitespace-pre-line text-slate-700 leading-relaxed">{content}</div>
+                                        <div className="whitespace-pre-line text-slate-700 leading-relaxed">{content}</div>
                                     </div>
                                 ))}
                             </div>
-                        </div>
-                    )}
-
-                    {!tempData && (
-                        <div className="bg-white rounded-lg shadow-sm p-6">
-                            <p className="text-slate-600">Temperature conditions are normal. No special precautions
-                                needed.</p>
                         </div>
                     )}
                 </div>
@@ -297,14 +774,13 @@ export default function MeghBondhuApp() {
                         onClick={goBack}
                         className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
                     >
-                        <ArrowLeft className="w-6 h-6"/>
+                        <ArrowLeft className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
-                            <CloudRain className="w-6 h-6 text-amber-200"/>
+                            <CloudRain className="w-6 h-6 text-amber-200" />
                         </div>
-                        <span
-                            className="font-semibold text-slate-800 text-lg">{t.futureWeatherDetail.rainfallDetail.title}</span>
+                        <span className="font-semibold text-slate-800 text-lg">{t.futureWeatherDetail.rainfallDetail.title}</span>
                     </div>
                     <button
                         onClick={toggleLanguage}
@@ -317,10 +793,10 @@ export default function MeghBondhuApp() {
                 <div className="p-4 space-y-4">
                     <div className="bg-white rounded-lg shadow-sm p-4">
                         <h3 className="font-medium text-slate-800 mb-2">
-                            Rainfall Data for {selectedDate}/{selectedMonth}/{selectedYear}
+                            {t.weatherDataFor} {selectedDate}/{selectedMonth}/{selectedYear}
                         </h3>
                         <div className="text-sm">
-                            <span className="text-slate-600">Daily Rainfall:</span>
+                            <span className="text-slate-600">{t.dailyRainfall}:</span>
                             <span className="font-semibold text-blue-600 ml-2">{weatherData.rainfall}mm</span>
                         </div>
                     </div>
@@ -328,14 +804,8 @@ export default function MeghBondhuApp() {
                     {rainfallData && (
                         <div className="bg-white rounded-lg shadow-sm p-6">
                             <h2 className="text-lg font-semibold text-slate-800 mb-4">{rainfallData.title}</h2>
-                            <div
-                                className="whitespace-pre-line text-slate-700 leading-relaxed">{rainfallData.content}</div>
-                        </div>
-                    )}
 
-                    {!rainfallData && (
-                        <div className="bg-white rounded-lg shadow-sm p-6">
-                            <p className="text-slate-600">Rainfall levels are normal. No special precautions needed.</p>
+                            <div className="whitespace-pre-line text-slate-700 leading-relaxed">{rainfallData.content}</div>
                         </div>
                     )}
                 </div>
@@ -351,7 +821,7 @@ export default function MeghBondhuApp() {
                         onClick={goBack}
                         className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
                     >
-                        <ArrowLeft className="w-6 h-6"/>
+                        <ArrowLeft className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
@@ -370,7 +840,7 @@ export default function MeghBondhuApp() {
                 <div className="p-4 space-y-4">
                     <div className="bg-white rounded-lg shadow-sm p-4">
                         <p className="text-sm text-slate-600 mb-4">
-                            Selected Date: {selectedDate}/{selectedMonth}/{selectedYear}
+                            {t.selectedDate} {selectedDate}/{selectedMonth}/{selectedYear}
                         </p>
                     </div>
 
@@ -381,7 +851,7 @@ export default function MeghBondhuApp() {
                         <div className="p-4">
                             <div className="flex items-center gap-4">
                                 <div className="p-3 rounded-lg bg-red-100">
-                                    <Thermometer className="w-6 h-6 text-red-500"/>
+                                    <Thermometer className="w-6 h-6 text-red-500" />
                                 </div>
                                 <div className="flex-1 text-left">
                                     <h3 className="font-semibold text-slate-800 text-base">{t.futureWeatherDetail.temperature}</h3>
@@ -398,7 +868,7 @@ export default function MeghBondhuApp() {
                         <div className="p-4">
                             <div className="flex items-center gap-4">
                                 <div className="p-3 rounded-lg bg-blue-100">
-                                    <CloudRain className="w-6 h-6 text-blue-500"/>
+                                    <CloudRain className="w-6 h-6 text-blue-500" />
                                 </div>
                                 <div className="flex-1 text-left">
                                     <h3 className="font-semibold text-slate-800 text-base">{t.futureWeatherDetail.rainfall}</h3>
@@ -407,6 +877,69 @@ export default function MeghBondhuApp() {
                             </div>
                         </div>
                     </button>
+                </div>
+            </div>
+        )
+    }
+
+    if (currentView === "awareness") {
+        const pdfList = [
+            { name: "Climate Change Awareness", file: "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf", size: "2.3 MB" },
+            { name: "Disaster Preparedness Guide", file: "https://www.princexml.com/samples/invoice-colorful/invoicesample.pdf", size: "1.8 MB" },
+            { name: "Health and Safety Tips", file: "https://www.princexml.com/samples/invoice-colorful/invoicesample.pdf", size: "3.1 MB" },
+            { name: "Environmental Protection", file: "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf", size: "2.7 MB" },
+            { name: "Community Engagement", file: "https://www.princexml.com/samples/invoice-colorful/invoicesample.pdf", size: "1.5 MB" },
+        ]
+
+        return (
+            <div className="min-h-screen bg-gray-50">
+                <div className="bg-amber-400 px-4 py-6 flex items-center justify-between">
+                    <button
+                        onClick={goBack}
+                        className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
+                    >
+                        <ArrowLeft className="w-6 h-6" />
+                    </button>
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
+                            <FileText className="w-6 h-6 text-amber-200" />
+                        </div>
+                        <span className="font-semibold text-slate-800 text-lg">{t.awarenessTitle}</span>
+                    </div>
+                    <button
+                        onClick={toggleLanguage}
+                        className="px-3 py-1 text-slate-700 hover:bg-amber-300 rounded transition-colors"
+                    >
+                        {t.languageSwitch}
+                    </button>
+                </div>
+
+                <div className="p-4 space-y-4">
+                    <div className="bg-white rounded-lg shadow-sm p-4">
+                        <h3 className="font-medium text-slate-800 mb-4">Available Documents</h3>
+                        <div className="space-y-3">
+                            {pdfList.map((pdf, index) => (
+                                <a
+                                    href={pdf.file}
+                                    key={index}
+                                    className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-red-100 rounded-lg">
+                                            <FileText className="w-5 h-5 text-red-600" />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-medium text-slate-800">{pdf.name}</h4>
+                                            <p className="text-sm text-slate-600">{pdf.size}</p>
+                                        </div>
+                                    </div>
+                                    <a href={pdf.file} className="px-3 py-1 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 transition-colors">
+                                        View
+                                    </a>
+                                </a>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
         )
@@ -440,7 +973,7 @@ export default function MeghBondhuApp() {
                         <div className="p-4">
                             <div className="flex items-center gap-4">
                                 <div className={`p-3 rounded-lg bg-gray-100`}>
-                                    <service.icon className={`w-6 h-6 ${service.color}`}/>
+                                    <service.icon className={`w-6 h-6 ${service.color}`} />
                                 </div>
                                 <div className="flex-1 text-left">
                                     <h3 className="font-semibold text-slate-800 text-base">{service.title}</h3>
