@@ -126,3 +126,18 @@
     font-family: var(--font-bengali);
   }
 }
+
+/* Make all <button> and <a> show the hand cursor */
+@layer base {
+  a,
+  button,
+  [role="button"] {
+    @apply cursor-pointer;
+  }
+
+  /* Optional: don’t show pointer when disabled */
+  button:disabled,
+  [aria-disabled="true"] {
+    @apply cursor-default;
+  }
+}
