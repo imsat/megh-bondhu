@@ -569,7 +569,7 @@ export default function MeghBondhuApp() {
                         <div className="p-4 space-y-4">
                     <div className="bg-white rounded-lg shadow-sm p-4">
                         <h3 className="font-medium text-slate-800 mb-2">
-                            {t.weatherDataFor} {selectedDate}/{new Date(0, selectedMonth - 1).toLocaleString("en-US", { month: "long" })}/{selectedYear}
+                            {t.weatherDataFor} {selectedDate}/{new Date(0, Number(selectedMonth) - 1).toLocaleString("en-US", { month: "long" })}/{selectedYear}
                         </h3>
                         <div className="grid grid-cols-2 gap-4 text-sm">
                             <div>
@@ -636,7 +636,7 @@ export default function MeghBondhuApp() {
                         <div className="p-4 space-y-4">
                     <div className="bg-white rounded-lg shadow-sm p-4">
                         <h3 className="font-medium text-slate-800 mb-2">
-                            {t.weatherDataFor} {selectedDate}/{new Date(0, selectedMonth - 1).toLocaleString("en-US", { month: "long" })}/{selectedYear}
+                            {t.weatherDataFor} {selectedDate}/{new Date(0, Number(selectedMonth) - 1).toLocaleString("en-US", { month: "long" })}/{selectedYear}
                         </h3>
                         <div className="text-sm">
                             <span className="text-slate-600">{t.dailyRainfall}:</span>
@@ -687,7 +687,7 @@ export default function MeghBondhuApp() {
                         <div className="p-4 space-y-4">
                     <div className="bg-white rounded-lg shadow-sm p-4">
                         <p className="text-sm text-slate-600 mb-4">
-                            {t.selectedDate} {selectedDate}/{new Date(0, selectedMonth - 1).toLocaleString("en-US", { month: "long" })}/{selectedYear}
+                            {t.selectedDate} {selectedDate}/{new Date(0, Number(selectedMonth) - 1).toLocaleString("en-US", { month: "long" })}/{selectedYear}
                         </p>
                     </div>
 
