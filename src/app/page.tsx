@@ -43,6 +43,7 @@ export default function MeghBondhuApp() {
         | "temperatureDetail"
         | "rainfallDetail"
         | "awareness"
+        | "clinic"
     >("home")
     const [selectedYear, setSelectedYear] = useState<string>("")
     const [selectedMonth, setSelectedMonth] = useState<string>("")
@@ -199,14 +200,21 @@ export default function MeghBondhuApp() {
         if (serviceType === "weather") {
             setCurrentView("todaysWeather")
         } else if (serviceType === "futureWeather") {
-            // setCurrentView("dateSelection")
+            setCurrentView("dateSelection")
         } else if (serviceType === "awareness") {
-            // setCurrentView("awareness")
+            setCurrentView("awareness")
+        } else if (serviceType === "clinic") {
+            setCurrentView("clinic")
         }
     }
 
     const goBack = () => {
-        if (currentView === "dateSelection" || currentView === "todaysWeather" || currentView === "awareness") {
+        if (
+            currentView === "dateSelection" ||
+            currentView === "todaysWeather" ||
+            currentView === "awareness" ||
+            currentView === "clinic"
+        ) {
             setCurrentView("home")
         } else if (currentView === "weatherOptions") {
             setCurrentView("dateSelection")
@@ -287,7 +295,9 @@ export default function MeghBondhuApp() {
                     </button>
                 </div>
 
-                <div className="p-4 space-y-4">
+                <div className="flex justify-center">
+                    <div className="w-full max-w-md">
+                        <div className="p-4 space-y-4">
                     {weatherLoading && (
                         <div className="bg-white rounded-lg shadow-sm p-6 text-center">
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500 mx-auto mb-4"></div>
@@ -416,6 +426,8 @@ export default function MeghBondhuApp() {
                         </>
                     )}
                 </div>
+                    </div>
+                </div>
             </div>
         )
     }
@@ -443,8 +455,9 @@ export default function MeghBondhuApp() {
                         {t.languageSwitch}
                     </button>
                 </div>
-
-                <div className="p-4 space-y-6">
+                <div className="flex justify-center">
+                    <div className="w-full max-w-md">
+                        <div className="p-4 space-y-6">
                     <div className="bg-white rounded-lg shadow-sm p-6">
                         <div className="space-y-4">
                             <div>
@@ -471,11 +484,16 @@ export default function MeghBondhuApp() {
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                                 >
                                     <option value="">{t.futureWeatherDetail.selectMonth}</option>
-                                    {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
-                                        <option key={month} value={month}>
-                                            {month}
-                                        </option>
-                                    ))}
+                                    {Array.from({ length: 12 }, (_, i) => {
+                                        const monthNumber = i + 1;
+                                        const monthName = new Date(0, i).toLocaleString("en-US", { month: "long" });
+                                        return (
+                                            <option key={monthNumber} value={monthNumber}>
+                                                {monthName}
+                                            </option>
+                                        );
+                                    })}
+
                                 </select>
                             </div>
 
@@ -503,6 +521,8 @@ export default function MeghBondhuApp() {
                                 {t.futureWeatherDetail.selectDate}
                             </button>
                         </div>
+                    </div>
+                </div>
                     </div>
                 </div>
             </div>
@@ -544,10 +564,12 @@ export default function MeghBondhuApp() {
                     </button>
                 </div>
 
-                <div className="p-4 space-y-4">
+                <div className="flex justify-center">
+                    <div className="w-full max-w-md">
+                        <div className="p-4 space-y-4">
                     <div className="bg-white rounded-lg shadow-sm p-4">
                         <h3 className="font-medium text-slate-800 mb-2">
-                            {t.weatherDataFor} {selectedDate}/{selectedMonth}/{selectedYear}
+                            {t.weatherDataFor} {selectedDate}/{new Date(0, selectedMonth - 1).toLocaleString("en-US", { month: "long" })}/{selectedYear}
                         </h3>
                         <div className="grid grid-cols-2 gap-4 text-sm">
                             <div>
@@ -574,6 +596,8 @@ export default function MeghBondhuApp() {
                             </div>
                         </div>
                     )}
+                </div>
+                    </div>
                 </div>
             </div>
         )
@@ -607,10 +631,12 @@ export default function MeghBondhuApp() {
                     </button>
                 </div>
 
-                <div className="p-4 space-y-4">
+                <div className="flex justify-center">
+                    <div className="w-full max-w-md">
+                        <div className="p-4 space-y-4">
                     <div className="bg-white rounded-lg shadow-sm p-4">
                         <h3 className="font-medium text-slate-800 mb-2">
-                            {t.weatherDataFor} {selectedDate}/{selectedMonth}/{selectedYear}
+                            {t.weatherDataFor} {selectedDate}/{new Date(0, selectedMonth - 1).toLocaleString("en-US", { month: "long" })}/{selectedYear}
                         </h3>
                         <div className="text-sm">
                             <span className="text-slate-600">{t.dailyRainfall}:</span>
@@ -625,6 +651,8 @@ export default function MeghBondhuApp() {
                             <div className="whitespace-pre-line text-slate-700 leading-relaxed">{rainfallData.content}</div>
                         </div>
                     )}
+                </div>
+                    </div>
                 </div>
             </div>
         )
@@ -654,10 +682,12 @@ export default function MeghBondhuApp() {
                     </button>
                 </div>
 
-                <div className="p-4 space-y-4">
+                <div className="flex justify-center">
+                    <div className="w-full max-w-md">
+                        <div className="p-4 space-y-4">
                     <div className="bg-white rounded-lg shadow-sm p-4">
                         <p className="text-sm text-slate-600 mb-4">
-                            {t.selectedDate} {selectedDate}/{selectedMonth}/{selectedYear}
+                            {t.selectedDate} {selectedDate}/{new Date(0, selectedMonth - 1).toLocaleString("en-US", { month: "long" })}/{selectedYear}
                         </p>
                     </div>
 
@@ -695,6 +725,8 @@ export default function MeghBondhuApp() {
                         </div>
                     </button>
                 </div>
+                    </div>
+                </div>
             </div>
         )
     }
@@ -725,7 +757,9 @@ export default function MeghBondhuApp() {
                     </button>
                 </div>
 
-                <div className="p-4 space-y-4">
+                <div className="flex justify-center">
+                    <div className="w-full max-w-md">
+                        <div className="p-4 space-y-4">
                     <div className="bg-white rounded-lg shadow-sm p-4">
                         <h3 className="font-medium text-slate-800 mb-4">{t.awarenessDetail.title}</h3>
                         <div className="space-y-3">
@@ -752,9 +786,65 @@ export default function MeghBondhuApp() {
                         </div>
                     </div>
                 </div>
+                    </div>
+                </div>
             </div>
         )
     }
+
+    if (currentView === "clinic") {
+        return (
+            <div className="min-h-screen bg-gray-50">
+                <div className="bg-amber-400 px-4 py-6 flex items-center justify-between">
+                    <button
+                        onClick={goBack}
+                        className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
+                    >
+                        <ArrowLeft className="w-6 h-6" />
+                    </button>
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
+                            <MapPin className="w-6 h-6 text-amber-200" />
+                        </div>
+                        <span className="font-semibold text-slate-800 text-lg">{t.clinicTitle}</span>
+                    </div>
+                    <button
+                        onClick={toggleLanguage}
+                        className="px-3 py-1 text-slate-700 hover:bg-amber-300 rounded transition-colors"
+                    >
+                        {t.languageSwitch}
+                    </button>
+                </div>
+
+                <div className="p-4">
+                    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <iframe
+                            width="100%"
+                            height="400px"
+                            frameBorder="0"
+                            allowFullScreen
+                            allow="geolocation"
+                            src="//umap.hotosm.org/en/map/dhaka-thrive-umap-dashboard_80?scaleControl=false&miniMap=false&scrollWheelZoom=false&zoomControl=true&editMode=disabled&moreControl=true&searchControl=null&tilelayersControl=null&embedControl=null&datalayersControl=true&onLoadPanel=caption&captionBar=false&captionMenus=true"
+                            className="w-full"
+                        />
+                        <div className="p-4 bg-gray-50 border-t">
+                            <p className="text-sm text-slate-600">
+                                <a
+                                    href="//umap.hotosm.org/en/map/dhaka-thrive-umap-dashboard_80?scaleControl=false&miniMap=false&scrollWheelZoom=true&zoomControl=true&editMode=disabled&moreControl=true&searchControl=null&tilelayersControl=null&embedControl=null&datalayersControl=true&onLoadPanel=caption&captionBar=false&captionMenus=true"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:text-blue-800 underline"
+                                >
+                                    See full screen
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -774,6 +864,8 @@ export default function MeghBondhuApp() {
                 </button>
             </div>
 
+            <div className="flex justify-center">
+                <div className="w-full max-w-md">
             <div className="p-4 space-y-4">
                 {services.map((service, index) => (
                     <button
@@ -794,6 +886,8 @@ export default function MeghBondhuApp() {
                         </div>
                     </button>
                 ))}
+            </div>
+                </div>
             </div>
         </div>
     )
