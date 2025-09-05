@@ -4,9 +4,7 @@ import { useState, useEffect } from "react"
 import {Sun, Leaf, MapPin, FileText, ArrowLeft, Calendar, Thermometer, CloudRain, Wind, Gauge, Eye} from "lucide-react"
 import { translations, type Language } from "@/lib/translations"
 import rainfallData from "@/data/rainfall.json"
-import minTempData from "@/data/minimum-temp.json"
-import maxTempData from "@/data/maximum-temp.json"
-
+import temperatureData from "@/data/temperature.json"
 interface WeatherData {
     temperature: number
     feelsLike: number
@@ -35,15 +33,7 @@ interface ForecastData {
 export default function MeghBondhuApp() {
     const [language, setLanguage] = useState<Language>("bn")
     const [currentView, setCurrentView] = useState<
-        | "home"
-        | "todaysWeather"
-        | "futureWeather"
-        | "dateSelection"
-        | "weatherOptions"
-        | "temperatureDetail"
-        | "rainfallDetail"
-        | "awareness"
-        | "clinic"
+        "home" | "todaysWeather" | "futureWeather" | "dateSelection" | "temperatureDetail" | "awareness" | "clinic"
     >("home")
     const [selectedYear, setSelectedYear] = useState<string>("")
     const [selectedMonth, setSelectedMonth] = useState<string>("")
@@ -177,18 +167,21 @@ export default function MeghBondhuApp() {
         }
 
         const rainfallEntry = rainfallData.find((entry) => entry.Year === yearNum && entry.Month === getMonthName(monthNum))
-        const rainfall = rainfallEntry ? (rainfallEntry as Record<string, number | string | boolean>)[dateNum.toString()] || 0 : 0
+        const rainfallMin = rainfallEntry ? rainfallEntry.Minimum || 0 : 0
+        const rainfallMax = rainfallEntry ? rainfallEntry.Maximum || 0 : 0
 
-        const minTempEntry = minTempData.find((entry) => entry.Year === yearNum && entry.Month === getMonthName(monthNum))
-        const minTemperature = minTempEntry ? (minTempEntry as Record<string, number | string | boolean>)[dateNum.toString()] || 20 : 20
+        const tempEntry = temperatureData.find(
+            (entry) => entry.Year === yearNum && entry.Month === getMonthName(monthNum) && entry.Day === dateNum,
+        )
 
-        const maxTempEntry = maxTempData.find((entry) => entry.Year === yearNum && entry.Month === getMonthName(monthNum))
-        const maxTemperature = maxTempEntry ? (maxTempEntry as Record<string, number | string | boolean>)[dateNum.toString()] || 30 : 30
+        const minTemperature = tempEntry && tempEntry.Minimum !== null ? tempEntry.Minimum : 20
+        const maxTemperature = tempEntry && tempEntry.Maximum !== null ? tempEntry.Maximum : 30
 
         return {
             maxTemperature: typeof maxTemperature === "number" && maxTemperature !== null ? maxTemperature : 30,
             minTemperature: typeof minTemperature === "number" && minTemperature !== null ? minTemperature : 20,
-            rainfall: typeof rainfall === "number" && rainfall !== null ? rainfall : 0,
+            rainfallMin: typeof rainfallMin === "number" && rainfallMin !== null ? rainfallMin : 0,
+            rainfallMax: typeof rainfallMax === "number" && rainfallMax !== null ? rainfallMax : 0,
         }
     }
 
@@ -216,25 +209,15 @@ export default function MeghBondhuApp() {
             currentView === "clinic"
         ) {
             setCurrentView("home")
-        } else if (currentView === "weatherOptions") {
+        } else if (currentView === "temperatureDetail") {
             setCurrentView("dateSelection")
-        } else if (currentView === "temperatureDetail" || currentView === "rainfallDetail") {
-            setCurrentView("weatherOptions")
         }
     }
 
     const handleDateSubmit = () => {
         if (selectedYear && selectedMonth && selectedDate) {
-            setCurrentView("weatherOptions")
+            setCurrentView("temperatureDetail")
         }
-    }
-
-    const handleTemperatureClick = () => {
-        setCurrentView("temperatureDetail")
-    }
-
-    const handleRainfallClick = () => {
-        setCurrentView("rainfallDetail")
     }
 
     const getTemperatureCondition = () => {
@@ -255,7 +238,7 @@ export default function MeghBondhuApp() {
         }
 
         const weatherData = getWeatherDataForDate(selectedYear, selectedMonth, selectedDate)
-        return weatherData.rainfall > 15 ? "heavy" : "normal"
+        return weatherData.rainfallMax > 100 ? "heavy" : "normal"
     }
 
     const services = [
@@ -531,6 +514,7 @@ export default function MeghBondhuApp() {
 
     if (currentView === "temperatureDetail") {
         const tempCondition = getTemperatureCondition()
+        const rainfallCondition = getRainfallCondition()
         const weatherData = getWeatherDataForDate(selectedYear, selectedMonth, selectedDate)
         const tempData =
             tempCondition === "heatwave"
@@ -538,6 +522,8 @@ export default function MeghBondhuApp() {
                 : tempCondition === "coldwave"
                     ? t.futureWeatherDetail.temperatureDetail.coldwave
                     : null
+
+        const rainfallData = rainfallCondition === "heavy" ? t.futureWeatherDetail.rainfallDetail.heavyRain : null
 
         return (
             <div className="min-h-screen bg-gray-50">
@@ -567,164 +553,72 @@ export default function MeghBondhuApp() {
                 <div className="flex justify-center">
                     <div className="w-full max-w-md">
                         <div className="p-4 space-y-4">
-                    <div className="bg-white rounded-lg shadow-sm p-4">
-                        <h3 className="font-medium text-slate-800 mb-2">
-                            {t.weatherDataFor} {selectedDate}/{new Date(0, Number(selectedMonth) - 1).toLocaleString("en-US", { month: "long" })}/{selectedYear}
-                        </h3>
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                                <span className="text-slate-600">{t.maxTemp}:</span>
-                                <span className="font-semibold text-red-600 ml-2">{weatherData.maxTemperature}°C</span>
-                            </div>
-                            <div>
-                                <span className="text-slate-600">{t.minTemp}:</span>
-                                <span className="font-semibold text-blue-600 ml-2">{weatherData.minTemperature}°C</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {tempData && (
-                        <div className="bg-white rounded-lg shadow-sm p-6">
-                            <h2 className="text-lg font-semibold text-slate-800 mb-4">{tempData.title}</h2>
-
-                            <div className="space-y-4">
-                                {Object.entries(tempData.sections).map(([key, content]) => (
-                                    <div key={key} className="border-b border-gray-100 pb-4 last:border-b-0">
-                                        <div className="whitespace-pre-line text-slate-700 leading-relaxed">{content}</div>
+                            <div className="bg-white rounded-lg shadow-sm p-4">
+                                <h3 className="font-medium text-slate-800 mb-2">
+                                    {t.weatherDataFor} {selectedDate}, {new Date(0, Number(selectedMonth) - 1).toLocaleString("en-US", { month: "long" })}, {selectedYear}
+                                </h3>
+                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <span className="text-slate-600">{t.minTemp}:</span>
+                                        <span
+                                            className="font-semibold text-blue-600 ml-2">{weatherData.minTemperature}°C</span>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
-    if (currentView === "rainfallDetail") {
-        const rainfallCondition = getRainfallCondition()
-        const weatherData = getWeatherDataForDate(selectedYear, selectedMonth, selectedDate)
-        const rainfallData = rainfallCondition === "heavy" ? t.futureWeatherDetail.rainfallDetail.heavyRain : null
-
-        return (
-            <div className="min-h-screen bg-gray-50">
-                <div className="bg-amber-400 px-4 py-6 flex items-center justify-between">
-                    <button
-                        onClick={goBack}
-                        className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
-                    >
-                        <ArrowLeft className="w-6 h-6" />
-                    </button>
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
-                            <CloudRain className="w-6 h-6 text-amber-200" />
-                        </div>
-                        <span className="font-semibold text-slate-800 text-lg">{t.futureWeatherDetail.rainfallDetail.title}</span>
-                    </div>
-                    <button
-                        onClick={toggleLanguage}
-                        className="px-3 py-1 text-slate-700 hover:bg-amber-300 rounded transition-colors"
-                    >
-                        {t.languageSwitch}
-                    </button>
-                </div>
-
-                <div className="flex justify-center">
-                    <div className="w-full max-w-md">
-                        <div className="p-4 space-y-4">
-                    <div className="bg-white rounded-lg shadow-sm p-4">
-                        <h3 className="font-medium text-slate-800 mb-2">
-                            {t.weatherDataFor} {selectedDate}/{new Date(0, Number(selectedMonth) - 1).toLocaleString("en-US", { month: "long" })}/{selectedYear}
-                        </h3>
-                        <div className="text-sm">
-                            <span className="text-slate-600">{t.dailyRainfall}:</span>
-                            <span className="font-semibold text-blue-600 ml-2">{weatherData.rainfall}mm</span>
-                        </div>
-                    </div>
-
-                    {rainfallData && (
-                        <div className="bg-white rounded-lg shadow-sm p-6">
-                            <h2 className="text-lg font-semibold text-slate-800 mb-4">{rainfallData.title}</h2>
-
-                            <div className="whitespace-pre-line text-slate-700 leading-relaxed">{rainfallData.content}</div>
-                        </div>
-                    )}
-                </div>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
-    if (currentView === "weatherOptions") {
-        return (
-            <div className="min-h-screen bg-gray-50">
-                <div className="bg-amber-400 px-4 py-6 flex items-center justify-between">
-                    <button
-                        onClick={goBack}
-                        className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
-                    >
-                        <ArrowLeft className="w-6 h-6" />
-                    </button>
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
-                            <div className="w-8 h-8 bg-amber-200 rounded-full"></div>
-                        </div>
-                        <span className="font-semibold text-slate-800 text-lg">{t.futureWeatherDetail.title}</span>
-                    </div>
-                    <button
-                        onClick={toggleLanguage}
-                        className="px-3 py-1 text-slate-700 hover:bg-amber-300 rounded transition-colors"
-                    >
-                        {t.languageSwitch}
-                    </button>
-                </div>
-
-                <div className="flex justify-center">
-                    <div className="w-full max-w-md">
-                        <div className="p-4 space-y-4">
-                    <div className="bg-white rounded-lg shadow-sm p-4">
-                        <p className="text-sm text-slate-600 mb-4">
-                            {t.selectedDate} {selectedDate}/{new Date(0, Number(selectedMonth) - 1).toLocaleString("en-US", { month: "long" })}/{selectedYear}
-                        </p>
-                    </div>
-
-                    <button
-                        onClick={handleTemperatureClick}
-                        className="w-full bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                    >
-                        <div className="p-4">
-                            <div className="flex items-center gap-4">
-                                <div className="p-3 rounded-lg bg-red-100">
-                                    <Thermometer className="w-6 h-6 text-red-500" />
-                                </div>
-                                <div className="flex-1 text-left">
-                                    <h3 className="font-semibold text-slate-800 text-base">{t.futureWeatherDetail.temperature}</h3>
-                                    <p className="text-sm text-slate-600 mt-1">{t.futureWeatherDetail.viewTemperature}</p>
+                                    <div>
+                                        <span className="text-slate-600">{t.maxTemp}:</span>
+                                        <span
+                                            className="font-semibold text-red-600 ml-2">{weatherData.maxTemperature}°C</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </button>
 
-                    <button
-                        onClick={handleRainfallClick}
-                        className="w-full bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                    >
-                        <div className="p-4">
-                            <div className="flex items-center gap-4">
-                                <div className="p-3 rounded-lg bg-blue-100">
-                                    <CloudRain className="w-6 h-6 text-blue-500" />
+                            {tempData && (
+                                <div className="bg-white rounded-lg shadow-sm p-6">
+                                    <h2 className="text-lg font-semibold text-slate-800 mb-4">{tempData.title}</h2>
+
+                                    <div className="space-y-4">
+                                    {Object.entries(tempData.sections).map(([key, content]) => (
+                                            <div key={key} className="border-b border-gray-100 pb-4 last:border-b-0">
+                                                <div
+                                                    className="whitespace-pre-line text-slate-700 leading-relaxed">{content}</div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                                <div className="flex-1 text-left">
-                                    <h3 className="font-semibold text-slate-800 text-base">{t.futureWeatherDetail.rainfall}</h3>
-                                    <p className="text-sm text-slate-600 mt-1">{t.futureWeatherDetail.viewRainfall}</p>
+                            )}
+
+                            <div className="bg-white rounded-lg shadow-sm p-4">
+                                <div>
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <CloudRain className="w-4 h-4 text-blue-500"/>
+                                        <span
+                                            className="text-sm font-medium text-slate-700">{t.futureWeatherDetail.rainfall}</span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <span className="text-slate-600">{t.monthlyMin}:</span>
+                                            <span
+                                                className="font-semibold text-blue-600 ml-2">{weatherData.rainfallMin.toFixed(1)}mm</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-slate-600">{t.monthlyMax}:</span>
+                                            <span
+                                                className="font-semibold text-red-600 ml-2">{weatherData.rainfallMax.toFixed(1)}mm</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                            {rainfallData && (
+                                <div className="bg-white rounded-lg shadow-sm p-6">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <CloudRain className="w-5 h-5 text-blue-500"/>
+                                        <h2 className="text-lg font-semibold text-slate-800">{rainfallData.title}</h2>
+                                    </div>
+
+                                    <div
+                                        className="whitespace-pre-line text-slate-700 leading-relaxed">{rainfallData.content}</div>
+                                </div>
+                            )}
                         </div>
-                    </button>
-                </div>
                     </div>
                 </div>
             </div>
@@ -741,11 +635,11 @@ export default function MeghBondhuApp() {
                         onClick={goBack}
                         className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
                     >
-                        <ArrowLeft className="w-6 h-6" />
+                        <ArrowLeft className="w-6 h-6"/>
                     </button>
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
-                            <FileText className="w-6 h-6 text-amber-200" />
+                            <FileText className="w-6 h-6 text-amber-200"/>
                         </div>
                         <span className="font-semibold text-slate-800 text-lg">{t.awarenessTitle}</span>
                     </div>
@@ -760,11 +654,11 @@ export default function MeghBondhuApp() {
                 <div className="flex justify-center">
                     <div className="w-full max-w-md">
                         <div className="p-4 space-y-4">
-                    <div className="bg-white rounded-lg shadow-sm p-4">
-                        <h3 className="font-medium text-slate-800 mb-4">{t.awarenessDetail.title}</h3>
-                        <div className="space-y-3">
-                            {documentList.map((document, index) => (
-                                <a
+                            <div className="bg-white rounded-lg shadow-sm p-4">
+                                <h3 className="font-medium text-slate-800 mb-4">{t.awarenessDetail.title}</h3>
+                                <div className="space-y-3">
+                                    {documentList.map((document, index) => (
+                                        <a
                                     href={document.file}
                                     key={index}
                                     className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"

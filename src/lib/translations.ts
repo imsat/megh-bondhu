@@ -1,3 +1,4 @@
+
 export const translations = {
     en: {
         title: "MeghBondhu",
@@ -15,11 +16,19 @@ export const translations = {
             title: "Available Documents",
             viewButton: "View",
             documents: [
+                // {
+                //     title: "Lightning Safety Awareness",
+                //     description: "Essential safety guidelines and precautions during lightning storms and thunderstorms",
+                // },
+                // {
+                //     title: "Weather Forecasting & Climate Projection",
+                //     description:
+                //         "Comprehensive guide on weather prediction, climate services, and multi-sectoral impact analysis",
+                // },
                 {
                     title: "Climate Change Awareness Guide",
                     description: "Comprehensive guide on climate change impacts and adaptation strategies",
                     file: "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
-
                 },
                 {
                     title: "Community Health Guidelines",
@@ -61,6 +70,8 @@ export const translations = {
         temperatureVariation: "Temperature Variation",
         maxTemp: "Max:",
         minTemp: "Min:",
+        monthlyMin: "Monthly Min:",
+        monthlyMax: "Monthly Max:",
         select: "Select",
         todaysWeatherDetail: {
             title: "Today's Weather",
@@ -162,6 +173,15 @@ export const translations = {
             title: "উপলব্ধ নথিপত্র",
             viewButton: "দেখুন",
             documents: [
+                // {
+                //     title: "বজ্রপাত সচেতনতা ও নিরাপত্তা",
+                //     description: "বজ্রপাত ও বজ্রঝড়ের সময় প্রয়োজনীয় নিরাপত্তা নির্দেশিকা এবং সতর্কতা",
+                //     file: "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+                // },
+                // {
+                //     title: "আবহাওয়া পূর্বাভাস ও জলবায়ু প্রক্ষেপণ",
+                //     description: "আবহাওয়া ভবিষ্যদ্বাণী, জলবায়ু সেবা এবং বহু-খাতিক প্রভাব বিশ্লেষণের বিস্তৃত গাইড",
+                // },
                 {
                     title: "জলবায়ু পরিবর্তন সচেতনতা গাইড",
                     description: "জলবায়ু পরিবর্তনের প্রভাব এবং অভিযোজন কৌশলের বিস্তৃত গাইড",
@@ -207,6 +227,8 @@ export const translations = {
         temperatureVariation: "তাপমাত্রার পরিবর্তন",
         maxTemp: "সর্বোচ্চ:",
         minTemp: "সর্বনিম্ন:",
+        monthlyMin: "মাসিক সর্বনিম্ন:",
+        monthlyMax: "মাসিক সর্বোচ্চ:",
         select: "নির্বাচন করুন",
         todaysWeatherDetail: {
             title: "আজকের আবহাওয়া",
