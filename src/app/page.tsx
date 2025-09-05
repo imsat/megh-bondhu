@@ -635,11 +635,11 @@ export default function MeghBondhuApp() {
                         onClick={goBack}
                         className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
                     >
-                        <ArrowLeft className="w-6 h-6"/>
+                        <ArrowLeft className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
-                            <FileText className="w-6 h-6 text-amber-200"/>
+                            <FileText className="w-6 h-6 text-amber-200" />
                         </div>
                         <span className="font-semibold text-slate-800 text-lg">{t.awarenessTitle}</span>
                     </div>
@@ -658,28 +658,32 @@ export default function MeghBondhuApp() {
                                 <h3 className="font-medium text-slate-800 mb-4">{t.awarenessDetail.title}</h3>
                                 <div className="space-y-3">
                                     {documentList.map((document, index) => (
-                                        <a
-                                    href={document.file}
-                                    key={index}
-                                    className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-red-100 rounded-lg">
-                                            <FileText className="w-5 h-5 text-red-600" />
+                                        <div
+                                            key={index}
+                                            className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2 bg-red-100 rounded-lg">
+                                                    <FileText className="w-5 h-5 text-red-600" />
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-medium text-slate-800">{document.title}</h4>
+                                                    <p className="text-sm text-slate-600">{document.description}</p>
+                                                </div>
+                                            </div>
+                                            <a
+                                                href={document.file}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="px-3 py-1 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 transition-colors"
+                                            >
+                                                {t.awarenessDetail.viewButton}
+                                            </a>
                                         </div>
-                                        <div>
-                                            <h4 className="font-medium text-slate-800">{document.title}</h4>
-                                            <p className="text-sm text-slate-600">{document.description}</p>
-                                        </div>
-                                    </div>
-                                    <a href={document.file} className="px-3 py-1 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 transition-colors">
-                                        {t.awarenessDetail.viewButton}
-                                    </a>
-                                </a>
-                            ))}
+                                    ))}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
                     </div>
                 </div>
             </div>

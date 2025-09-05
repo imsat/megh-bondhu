@@ -16,39 +16,15 @@ export const translations = {
             title: "Available Documents",
             viewButton: "View",
             documents: [
-                // {
-                //     title: "Lightning Safety Awareness",
-                //     description: "Essential safety guidelines and precautions during lightning storms and thunderstorms",
-                // },
-                // {
-                //     title: "Weather Forecasting & Climate Projection",
-                //     description:
-                //         "Comprehensive guide on weather prediction, climate services, and multi-sectoral impact analysis",
-                // },
                 {
-                    title: "Climate Change Awareness Guide",
-                    description: "Comprehensive guide on climate change impacts and adaptation strategies",
-                    file: "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+                    title: "Thunderstorm Advisory",
+                    description: "Essential safety guidelines and precautions during lightning storms and thunderstorms",
+                    file: "/pdfs/Thunderstorm_Advisory.pdf",
                 },
                 {
-                    title: "Community Health Guidelines",
-                    description: "Essential health practices for community wellbeing",
-                    file: "https://www.princexml.com/samples/invoice-colorful/invoicesample.pdf"
-                },
-                {
-                    title: "Disaster Preparedness Manual",
-                    description: "Step-by-step guide for disaster preparedness and response",
-                    file: "https://www.princexml.com/samples/invoice-colorful/invoicesample.pdf"
-                },
-                {
-                    title: "Renewable Energy Information",
-                    description: "Information about renewable energy options and benefits",
-                    file: "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
-                },
-                {
-                    title: "Water Safety and Sanitation",
-                    description: "Guidelines for safe water practices and sanitation",
-                    file: "https://www.princexml.com/samples/invoice-colorful/invoicesample.pdf"
+                    title: "World Meteorological Day",
+                    description: "Information about World Meteorological Day and weather awareness",
+                    file: "/pdfs/World_Meteorological_Day.pdf",
                 },
             ],
         },
@@ -173,39 +149,15 @@ export const translations = {
             title: "উপলব্ধ নথিপত্র",
             viewButton: "দেখুন",
             documents: [
-                // {
-                //     title: "বজ্রপাত সচেতনতা ও নিরাপত্তা",
-                //     description: "বজ্রপাত ও বজ্রঝড়ের সময় প্রয়োজনীয় নিরাপত্তা নির্দেশিকা এবং সতর্কতা",
-                //     file: "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
-                // },
-                // {
-                //     title: "আবহাওয়া পূর্বাভাস ও জলবায়ু প্রক্ষেপণ",
-                //     description: "আবহাওয়া ভবিষ্যদ্বাণী, জলবায়ু সেবা এবং বহু-খাতিক প্রভাব বিশ্লেষণের বিস্তৃত গাইড",
-                // },
                 {
-                    title: "জলবায়ু পরিবর্তন সচেতনতা গাইড",
-                    description: "জলবায়ু পরিবর্তনের প্রভাব এবং অভিযোজন কৌশলের বিস্তৃত গাইড",
-                    file: "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
+                    title: "বজ্রপাত সচেতনতা ও নিরাপত্তা",
+                    description: "বজ্রপাত ও বজ্রঝড়ের সময় প্রয়োজনীয় নিরাপত্তা নির্দেশিকা এবং সতর্কতা",
+                    file: "/pdfs/Thunderstorm_Advisory.pdf",
                 },
                 {
-                    title: "কমিউনিটি স্বাস্থ্য নির্দেশিকা",
-                    description: "কমিউনিটির কল্যাণের জন্য প্রয়োজনীয় স্বাস্থ্য অনুশীলন",
-                    file: "https://www.princexml.com/samples/invoice-colorful/invoicesample.pdf"
-                },
-                {
-                    title: "দুর্যোগ প্রস্তুতি ম্যানুয়াল",
-                    description: "দুর্যোগ প্রস্তুতি এবং প্রতিক্রিয়ার জন্য ধাপে ধাপে গাইড",
-                    file: "https://www.princexml.com/samples/invoice-colorful/invoicesample.pdf"
-                },
-                {
-                    title: "নবায়নযোগ্য শক্তির তথ্য",
-                    description: "নবায়নযোগ্য শক্তির বিকল্প এবং সুবিধা সম্পর্কে তথ্য",
-                    file: "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
-                },
-                {
-                    title: "পানির নিরাপত্তা ও স্যানিটেশন",
-                    description: "নিরাপদ পানি অনুশীলন এবং স্যানিটেশনের জন্য নির্দেশিকা",
-                    file: "https://www.princexml.com/samples/invoice-colorful/invoicesample.pdf"
+                    title: "বিশ্ব আবহাওয়া দিবস",
+                    description: "বিশ্ব আবহাওয়া দিবস এবং আবহাওয়া সচেতনতা সম্পর্কে তথ্য",
+                    file: "/pdfs/World_Meteorological_Day.pdf",
                 },
             ],
         },
