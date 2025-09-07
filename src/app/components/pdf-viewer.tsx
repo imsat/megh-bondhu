@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { X, ExternalLink, Download } from "lucide-react"
 
 interface PDFViewerProps {
@@ -12,13 +12,22 @@ interface PDFViewerProps {
 export default function PDFViewer({ file, title, onClose }: PDFViewerProps) {
     const [loading, setLoading] = useState<boolean>(true)
     const [error, setError] = useState<boolean>(false)
+    const iframeRef = useRef<HTMLIFrameElement>(null)
 
-    const handleLoad = () => {
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setLoading(false)
+        }, 1000)
+
+        return () => clearTimeout(timer)
+    }, [file])
+
+    const handleIframeLoad = () => {
         setLoading(false)
         setError(false)
     }
 
-    const handleError = () => {
+    const handleIframeError = () => {
         setLoading(false)
         setError(true)
     }
@@ -65,7 +74,7 @@ export default function PDFViewer({ file, title, onClose }: PDFViewerProps) {
             {/* PDF Content */}
             <div className="flex-1 overflow-hidden bg-gray-100 relative">
                 {loading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-white">
+                    <div className="absolute inset-0 flex items-center justify-center bg-white z-10">
                         <div className="text-center">
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500 mx-auto mb-4"></div>
                             <p className="text-slate-600">Loading PDF...</p>
@@ -74,7 +83,7 @@ export default function PDFViewer({ file, title, onClose }: PDFViewerProps) {
                 )}
 
                 {error && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-white">
+                    <div className="absolute inset-0 flex items-center justify-center bg-white z-10">
                         <div className="text-center max-w-md mx-auto p-6">
                             <p className="text-red-600 mb-4">Unable to display PDF in browser</p>
                             <div className="space-y-3">
@@ -98,11 +107,16 @@ export default function PDFViewer({ file, title, onClose }: PDFViewerProps) {
                 )}
 
                 <iframe
-                    src={`${file}#toolbar=1&navpanes=1&scrollbar=1`}
+                    ref={iframeRef}
+                    src={`${file}#toolbar=1&navpanes=1&scrollbar=1&page=1&view=FitH`}
                     className="w-full h-full border-0"
-                    onLoad={handleLoad}
-                    onError={handleError}
+                    onLoad={handleIframeLoad}
+                    onError={handleIframeError}
                     title={title}
+                    style={{
+                        minHeight: "100%",
+                        display: loading ? "none" : "block",
+                    }}
                 />
             </div>
         </div>
