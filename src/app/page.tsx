@@ -5,7 +5,6 @@ import {Sun, Leaf, MapPin, FileText, ArrowLeft, Calendar, Thermometer, CloudRain
 import { translations, type Language } from "@/lib/translations"
 import rainfallData from "@/data/rainfall.json"
 import temperatureData from "@/data/temperature.json"
-import PDFViewer from "@/app/components/pdf-viewer";
 interface WeatherData {
     temperature: number
     feelsLike: number
@@ -43,7 +42,6 @@ export default function MeghBondhuApp() {
     const [forecastData, setForecastData] = useState<ForecastData | null>(null)
     const [weatherLoading, setWeatherLoading] = useState(false)
     const [weatherError, setWeatherError] = useState<string | null>(null)
-    const [selectedPDF, setSelectedPDF] = useState<{ file: string; title: string } | null>(null)
     const t = translations[language]
 
     const fetchTodaysWeather = async () => {
@@ -667,7 +665,7 @@ export default function MeghBondhuApp() {
                                             >
                                                 <div className="flex items-center gap-3">
                                                     <div className="p-2 bg-red-100 rounded-lg">
-                                                        <FileText className="w-5 h-5 text-red-600" />
+                                                        {document.icon || <FileText className="w-5 h-5 text-red-600" />}
                                                     </div>
                                                     <div>
                                                         <h4 className="font-medium text-slate-800">{document.title}</h4>
@@ -675,7 +673,7 @@ export default function MeghBondhuApp() {
                                                     </div>
                                                 </div>
                                                 <button
-                                                    onClick={() => setSelectedPDF({ file: document.file, title: document.title })}
+                                                    onClick={() => window.open(document.file, "_blank")}
                                                     className="px-3 py-1 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 transition-colors"
                                                 >
                                                     {t.awarenessDetail.viewButton}
@@ -688,10 +686,6 @@ export default function MeghBondhuApp() {
                         </div>
                     </div>
                 </div>
-
-                {selectedPDF && (
-                    <PDFViewer file={selectedPDF.file} title={selectedPDF.title} onClose={() => setSelectedPDF(null)} />
-                )}
             </>
         )
     }
