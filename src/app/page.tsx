@@ -1,26 +1,11 @@
 "use client"
 
-import {useState, useEffect} from "react"
-import {
-    Sun,
-    Leaf,
-    MapPin,
-    FileText,
-    ArrowLeft,
-    Calendar,
-    Thermometer,
-    CloudRain,
-    Wind,
-    Gauge,
-    Eye,
-    Download,
-    ExternalLink
-} from "lucide-react"
-import {translations, type Language} from "@/lib/translations"
+import { useState, useEffect } from "react"
+import {Sun, Leaf, MapPin, FileText, ArrowLeft, Calendar, Thermometer, CloudRain, Wind, Gauge, Eye} from "lucide-react"
+import { translations, type Language } from "@/lib/translations"
 import rainfallData from "@/data/rainfall.json"
 import temperatureData from "@/data/temperature.json"
-import Chatbot from "@/app/components/Chatbot";
-
+import PDFViewer from "@/app/components/pdf-viewer";
 interface WeatherData {
     temperature: number
     feelsLike: number
@@ -58,7 +43,7 @@ export default function MeghBondhuApp() {
     const [forecastData, setForecastData] = useState<ForecastData | null>(null)
     const [weatherLoading, setWeatherLoading] = useState(false)
     const [weatherError, setWeatherError] = useState<string | null>(null)
-    const [selectedPDF, setSelectedPDF] = useState<string | null>(null)
+    const [selectedPDF, setSelectedPDF] = useState<{ file: string; title: string } | null>(null)
     const t = translations[language]
 
     const fetchTodaysWeather = async () => {
@@ -259,7 +244,7 @@ export default function MeghBondhuApp() {
     }
 
     const services = [
-        {id: "weather", icon: Sun, title: t.weatherTitle, desc: t.weatherDesc, color: "text-orange-500"},
+        { id: "weather", icon: Sun, title: t.weatherTitle, desc: t.weatherDesc, color: "text-orange-500" },
         {
             id: "futureWeather",
             icon: Leaf,
@@ -267,155 +252,9 @@ export default function MeghBondhuApp() {
             desc: t.futureWeatherDesc,
             color: "text-green-500",
         },
-        {id: "awareness", icon: FileText, title: t.awarenessTitle, desc: t.awarenessDesc, color: "text-purple-500"},
-        {id: "clinic", icon: MapPin, title: t.clinicTitle, desc: t.clinicDesc, color: "text-blue-500"},
+        { id: "awareness", icon: FileText, title: t.awarenessTitle, desc: t.awarenessDesc, color: "text-purple-500" },
+        { id: "clinic", icon: MapPin, title: t.clinicTitle, desc: t.clinicDesc, color: "text-blue-500" },
     ]
-
-    const PDFViewer = ({ pdfUrl, onClose }: { pdfUrl: string; onClose: () => void }) => {
-        const [viewerError, setViewerError] = useState(false)
-        const [isFullscreen, setIsFullscreen] = useState(false)
-
-        const handleIframeError = () => {
-            setViewerError(true)
-        }
-
-        const openInNewTab = () => {
-            window.open(pdfUrl, "_blank", "noopener,noreferrer")
-        }
-
-        const downloadPDF = () => {
-            const link = document.createElement("a")
-            link.href = pdfUrl
-            link.download = pdfUrl.split("/").pop() || "document.pdf"
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-        }
-
-        const toggleFullscreen = () => {
-            setIsFullscreen(!isFullscreen)
-        }
-
-        return (
-            <div
-                className={`bg-white rounded-lg shadow-sm overflow-hidden ${
-                    isFullscreen ? "fixed inset-0 z-50 rounded-none" : ""
-                }`}
-            >
-                <div className="flex items-center justify-between p-3 sm:p-4 bg-gray-50 border-b">
-                    <div className="flex items-center gap-2">
-                        <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded transition-colors" title="Close PDF">
-                            <ArrowLeft className="w-4 h-4 text-slate-600" />
-                        </button>
-                        <h4 className="font-medium text-slate-800 text-sm sm:text-base truncate">
-                            {pdfUrl.split("/").pop()?.replace(".pdf", "") || "PDF Document"}
-                        </h4>
-                    </div>
-
-                    <div className="flex items-center gap-1 sm:gap-2">
-                        <button
-                            onClick={toggleFullscreen}
-                            className="p-2 hover:bg-gray-200 rounded transition-colors"
-                            title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
-                        >
-                            {isFullscreen ? (
-                                <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            ) : (
-                                <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
-                                    />
-                                </svg>
-                            )}
-                        </button>
-
-                        <button
-                            onClick={downloadPDF}
-                            className="p-2 hover:bg-gray-200 rounded transition-colors"
-                            title="Download PDF"
-                        >
-                            <Download className="w-4 h-4 text-slate-600" />
-                        </button>
-
-                        <button
-                            onClick={openInNewTab}
-                            className="p-2 hover:bg-gray-200 rounded transition-colors"
-                            title="Open in new tab"
-                        >
-                            <ExternalLink className="w-4 h-4 text-slate-600" />
-                        </button>
-                    </div>
-                </div>
-
-                {viewerError ? (
-                    <div className="p-4 sm:p-6 text-center">
-                        <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-slate-800 mb-2">Cannot display PDF</h3>
-                        <p className="text-slate-600 mb-4 text-sm sm:text-base">
-                            Your browser doesn't support inline PDF viewing. Use the options below to access the document.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                            <button
-                                onClick={openInNewTab}
-                                className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm sm:text-base"
-                            >
-                                <ExternalLink className="w-4 h-4" />
-                                Open in New Tab
-                            </button>
-                            <button
-                                onClick={downloadPDF}
-                                className="flex items-center justify-center gap-2 px-4 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm sm:text-base"
-                            >
-                                <Download className="w-4 h-4" />
-                                Download PDF
-                            </button>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="relative">
-                        <iframe
-                            src={`${pdfUrl}#toolbar=1&navpanes=0&scrollbar=1&view=FitH`}
-                            // className={`w-full border-0 ${isFullscreen ? "h-[calc(100vh-60px)]" : "h-[50vh] sm:h-[60vh] md:h-96"}`}
-                            className={`w-full border-0 ${isFullscreen ? "h-[calc(100vh-60px)]" : "h-[50vh] sm:h-[60vh] md:h-[600px]"}`}
-                            title="PDF Viewer"
-                            onError={handleIframeError}
-                            onLoad={(e) => {
-                                try {
-                                    const iframe = e.target as HTMLIFrameElement
-                                    if (!iframe.contentDocument && !iframe.contentWindow) {
-                                        handleIframeError()
-                                    }
-                                } catch (error) {
-                                    handleIframeError()
-                                }
-                            }}
-                        />
-
-                        <div className="absolute inset-0 bg-gray-100 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
-                        </div>
-                    </div>
-                )}
-
-                {!viewerError && (
-                    <div className="p-3 bg-gray-50 border-t">
-                        <div className="flex items-center justify-between text-xs sm:text-sm text-slate-600">
-                            <span>Tap and drag to navigate • Pinch to zoom</span>
-                            <div className="flex items-center gap-2">
-                                <span className="hidden sm:inline">PDF Document</span>
-                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
-        )
-    }
 
     if (currentView === "todaysWeather") {
         return (
@@ -425,11 +264,11 @@ export default function MeghBondhuApp() {
                         onClick={goBack}
                         className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
                     >
-                        <ArrowLeft className="w-6 h-6"/>
+                        <ArrowLeft className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
-                            <Sun className="w-6 h-6 text-amber-200"/>
+                            <Sun className="w-6 h-6 text-amber-200" />
                         </div>
                         <span className="font-semibold text-slate-800 text-lg">{t.todaysWeatherDetail.title}</span>
                     </div>
@@ -446,8 +285,7 @@ export default function MeghBondhuApp() {
                         <div className="p-4 space-y-4">
                             {weatherLoading && (
                                 <div className="bg-white rounded-lg shadow-sm p-6 text-center">
-                                    <div
-                                        className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500 mx-auto mb-4"></div>
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500 mx-auto mb-4"></div>
                                     <p className="text-slate-600">{t.todaysWeatherDetail.loading}</p>
                                 </div>
                             )}
@@ -467,8 +305,7 @@ export default function MeghBondhuApp() {
                             {todaysWeather && (
                                 <>
                                     {/* Main Temperature Card */}
-                                    <div
-                                        className="bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg shadow-sm p-6 text-white">
+                                    <div className="bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg shadow-sm p-6 text-white">
                                         <div className="flex items-center justify-between">
                                             <div>
                                                 <h2 className="text-3xl font-bold">{todaysWeather.temperature}°C</h2>
@@ -478,8 +315,7 @@ export default function MeghBondhuApp() {
                                                 </p>
                                             </div>
                                             <div className="text-right">
-                                                <img src={`https:${todaysWeather.icon}`} alt="Weather icon"
-                                                     className="w-16 h-16"/>
+                                                <img src={`https:${todaysWeather.icon}`} alt="Weather icon" className="w-16 h-16" />
                                             </div>
                                         </div>
                                     </div>
@@ -488,7 +324,7 @@ export default function MeghBondhuApp() {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="bg-white rounded-lg shadow-sm p-4">
                                             <div className="flex items-center gap-3">
-                                                <FileText className="w-5 h-5 text-blue-500"/>
+                                                <FileText className="w-5 h-5 text-blue-500" />
                                                 <div>
                                                     <p className="text-sm text-slate-600">{t.todaysWeatherDetail.humidity}</p>
                                                     <p className="font-semibold text-slate-800">{todaysWeather.humidity}%</p>
@@ -498,7 +334,7 @@ export default function MeghBondhuApp() {
 
                                         <div className="bg-white rounded-lg shadow-sm p-4">
                                             <div className="flex items-center gap-3">
-                                                <Wind className="w-5 h-5 text-green-500"/>
+                                                <Wind className="w-5 h-5 text-green-500" />
                                                 <div>
                                                     <p className="text-sm text-slate-600">{t.todaysWeatherDetail.windSpeed}</p>
                                                     <p className="font-semibold text-slate-800">{todaysWeather.windSpeed} km/h</p>
@@ -508,7 +344,7 @@ export default function MeghBondhuApp() {
 
                                         <div className="bg-white rounded-lg shadow-sm p-4">
                                             <div className="flex items-center gap-3">
-                                                <Gauge className="w-5 h-5 text-purple-500"/>
+                                                <Gauge className="w-5 h-5 text-purple-500" />
                                                 <div>
                                                     <p className="text-sm text-slate-600">{t.todaysWeatherDetail.pressure}</p>
                                                     <p className="font-semibold text-slate-800">{todaysWeather.pressure} hPa</p>
@@ -518,7 +354,7 @@ export default function MeghBondhuApp() {
 
                                         <div className="bg-white rounded-lg shadow-sm p-4">
                                             <div className="flex items-center gap-3">
-                                                <Eye className="w-5 h-5 text-gray-500"/>
+                                                <Eye className="w-5 h-5 text-gray-500" />
                                                 <div>
                                                     <p className="text-sm text-slate-600">{t.todaysWeatherDetail.visibility}</p>
                                                     <p className="font-semibold text-slate-800">{todaysWeather.visibility} km</p>
@@ -530,10 +366,8 @@ export default function MeghBondhuApp() {
                                     {/* UV Index */}
                                     <div className="bg-white rounded-lg shadow-sm p-4">
                                         <div className="flex items-center justify-between">
-                                            <span
-                                                className="text-sm text-slate-600">{t.todaysWeatherDetail.uvIndex}</span>
-                                            <span
-                                                className="font-semibold text-slate-800">{todaysWeather.uvIndex}</span>
+                                            <span className="text-sm text-slate-600">{t.todaysWeatherDetail.uvIndex}</span>
+                                            <span className="font-semibold text-slate-800">{todaysWeather.uvIndex}</span>
                                         </div>
                                     </div>
 
@@ -556,22 +390,16 @@ export default function MeghBondhuApp() {
                                                             className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0"
                                                         >
                                                             <div className="flex items-center gap-3">
-                                                                <div
-                                                                    className="w-16 text-sm font-medium text-slate-700">{timeStr}</div>
+                                                                <div className="w-16 text-sm font-medium text-slate-700">{timeStr}</div>
                                                             </div>
 
                                                             <div className="flex items-center gap-3">
-                                                                <img src={`https:${hour.icon}`} alt={hour.condition}
-                                                                     className="w-8 h-8"/>
+                                                                <img src={`https:${hour.icon}`} alt={hour.condition} className="w-8 h-8" />
                                                                 <div className="text-right">
                                                                     <div className="flex items-center gap-2">
-                                                                        <span
-                                                                            className="font-semibold text-slate-800">{hour.temperature}°C</span>
+                                                                        <span className="font-semibold text-slate-800">{hour.temperature}°C</span>
                                                                     </div>
-                                                                    <div
-                                                                        className="text-xs text-blue-600">{hour.chanceOfRain}%
-                                                                        rain
-                                                                    </div>
+                                                                    <div className="text-xs text-blue-600">{hour.chanceOfRain}% rain</div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -597,11 +425,11 @@ export default function MeghBondhuApp() {
                         onClick={goBack}
                         className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
                     >
-                        <ArrowLeft className="w-6 h-6"/>
+                        <ArrowLeft className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
-                            <Calendar className="w-6 h-6 text-amber-200"/>
+                            <Calendar className="w-6 h-6 text-amber-200" />
                         </div>
                         <span className="font-semibold text-slate-800 text-lg">{t.futureWeatherDetail.selectDate}</span>
                     </div>
@@ -618,15 +446,14 @@ export default function MeghBondhuApp() {
                             <div className="bg-white rounded-lg shadow-sm p-6">
                                 <div className="space-y-4">
                                     <div>
-                                        <label
-                                            className="block text-sm font-medium text-slate-700 mb-2">{t.futureWeatherDetail.year}</label>
+                                        <label className="block text-sm font-medium text-slate-700 mb-2">{t.futureWeatherDetail.year}</label>
                                         <select
                                             value={selectedYear}
                                             onChange={(e) => setSelectedYear(e.target.value)}
                                             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                                         >
                                             <option value="">{t.futureWeatherDetail.selectYear}</option>
-                                            {Array.from({length: 2}, (_, i) => 2026 + i).map((year) => (
+                                            {Array.from({ length: 2 }, (_, i) => 2026 + i).map((year) => (
                                                 <option key={year} value={year}>
                                                     {year}
                                                 </option>
@@ -635,17 +462,16 @@ export default function MeghBondhuApp() {
                                     </div>
 
                                     <div>
-                                        <label
-                                            className="block text-sm font-medium text-slate-700 mb-2">{t.futureWeatherDetail.month}</label>
+                                        <label className="block text-sm font-medium text-slate-700 mb-2">{t.futureWeatherDetail.month}</label>
                                         <select
                                             value={selectedMonth}
                                             onChange={(e) => setSelectedMonth(e.target.value)}
                                             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                                         >
                                             <option value="">{t.futureWeatherDetail.selectMonth}</option>
-                                            {Array.from({length: 12}, (_, i) => {
+                                            {Array.from({ length: 12 }, (_, i) => {
                                                 const monthNumber = i + 1;
-                                                const monthName = new Date(0, i).toLocaleString("en-US", {month: "long"});
+                                                const monthName = new Date(0, i).toLocaleString("en-US", { month: "long" });
                                                 return (
                                                     <option key={monthNumber} value={monthNumber}>
                                                         {monthName}
@@ -657,15 +483,14 @@ export default function MeghBondhuApp() {
                                     </div>
 
                                     <div>
-                                        <label
-                                            className="block text-sm font-medium text-slate-700 mb-2">{t.futureWeatherDetail.date}</label>
+                                        <label className="block text-sm font-medium text-slate-700 mb-2">{t.futureWeatherDetail.date}</label>
                                         <select
                                             value={selectedDate}
                                             onChange={(e) => setSelectedDate(e.target.value)}
                                             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                                         >
                                             <option value="">{t.futureWeatherDetail.selectDate}</option>
-                                            {Array.from({length: 31}, (_, i) => i + 1).map((date) => (
+                                            {Array.from({ length: 31 }, (_, i) => i + 1).map((date) => (
                                                 <option key={date} value={date}>
                                                     {date}
                                                 </option>
@@ -709,11 +534,11 @@ export default function MeghBondhuApp() {
                         onClick={goBack}
                         className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
                     >
-                        <ArrowLeft className="w-6 h-6"/>
+                        <ArrowLeft className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
-                            <Thermometer className="w-6 h-6 text-amber-200"/>
+                            <Thermometer className="w-6 h-6 text-amber-200" />
                         </div>
                         <span className="font-semibold text-slate-800 text-lg">
               {t.futureWeatherDetail.temperatureDetail.title}
@@ -732,7 +557,7 @@ export default function MeghBondhuApp() {
                         <div className="p-4 space-y-4">
                             <div className="bg-white rounded-lg shadow-sm p-4">
                                 <h3 className="font-medium text-slate-800 mb-2">
-                                    {t.weatherDataFor} {selectedDate}, {new Date(0, Number(selectedMonth) - 1).toLocaleString("en-US", {month: "long"})}, {selectedYear}
+                                    {t.weatherDataFor} {selectedDate}, {new Date(0, Number(selectedMonth) - 1).toLocaleString("en-US", { month: "long" })}, {selectedYear}
                                 </h3>
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                     <div>
@@ -806,66 +631,71 @@ export default function MeghBondhuApp() {
         const documentList = t.awarenessDetail.documents
 
         return (
-            <div className="min-h-screen bg-gray-50">
-                <div className="bg-amber-400 px-4 py-6 flex items-center justify-between">
-                    <button
-                        onClick={goBack}
-                        className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
-                    >
-                        <ArrowLeft className="w-6 h-6"/>
-                    </button>
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
-                            <FileText className="w-6 h-6 text-amber-200"/>
+            <>
+                <div className="min-h-screen bg-gray-50">
+                    <div className="bg-amber-400 px-4 py-6 flex items-center justify-between">
+                        <button
+                            onClick={goBack}
+                            className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
+                        >
+                            <ArrowLeft className="w-6 h-6" />
+                        </button>
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
+                                <FileText className="w-6 h-6 text-amber-200" />
+                            </div>
+                            <span className="font-semibold text-slate-800 text-lg">{t.awarenessTitle}</span>
                         </div>
-                        <span className="font-semibold text-slate-800 text-lg">{t.awarenessTitle}</span>
+                        <button
+                            onClick={toggleLanguage}
+                            className="px-3 py-1 text-slate-700 hover:bg-amber-300 rounded transition-colors"
+                        >
+                            {t.languageSwitch}
+                        </button>
                     </div>
-                    <button
-                        onClick={toggleLanguage}
-                        className="px-3 py-1 text-slate-700 hover:bg-amber-300 rounded transition-colors"
-                    >
-                        {t.languageSwitch}
-                    </button>
-                </div>
 
-                {selectedPDF && <PDFViewer pdfUrl={selectedPDF} onClose={() => setSelectedPDF(null)}/>}
-                {!selectedPDF && (<div className="flex justify-center">
-                    <div className="w-full max-w-md">
-                        <div className="p-4 space-y-4">
-                            <div className="bg-white rounded-lg shadow-sm p-4">
-                                <h3 className="font-medium text-slate-800 mb-4">{t.awarenessDetail.title}</h3>
-                                <div className="space-y-3">
-                                    {documentList.map((document, index) => (
-                                        <div
-                                            key={index}
-                                            className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <div className="p-2 bg-red-100 rounded-lg">
-                                                    {document.icon || <FileText className="w-5 h-5 text-red-600"/>}
-
-                                                </div>
-                                                <div>
-                                                    <h4 className="font-medium text-slate-800">{document.title}</h4>
-                                                    <p className="text-sm text-slate-600">{document.description}</p>
-                                                </div>
-                                            </div>
-                                            <button
-                                                onClick={() => setSelectedPDF(document.file)}
-                                                className="px-3 py-1 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 transition-colors"
+                    <div className="flex justify-center">
+                        <div className="w-full max-w-md">
+                            <div className="p-4 space-y-4">
+                                <div className="bg-white rounded-lg shadow-sm p-4">
+                                    <h3 className="font-medium text-slate-800 mb-4">{t.awarenessDetail.title}</h3>
+                                    <div className="space-y-3">
+                                        {documentList.map((document, index) => (
+                                            <div
+                                                key={index}
+                                                className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                                             >
-                                                {t.awarenessDetail.viewButton}
-                                            </button>
-                                        </div>
-                                    ))}
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2 bg-red-100 rounded-lg">
+                                                        <FileText className="w-5 h-5 text-red-600" />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="font-medium text-slate-800">{document.title}</h4>
+                                                        <p className="text-sm text-slate-600">{document.description}</p>
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    onClick={() => setSelectedPDF({ file: document.file, title: document.title })}
+                                                    className="px-3 py-1 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 transition-colors"
+                                                >
+                                                    {t.awarenessDetail.viewButton}
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>)}
-            </div>
+                </div>
+
+                {selectedPDF && (
+                    <PDFViewer file={selectedPDF.file} title={selectedPDF.title} onClose={() => setSelectedPDF(null)} />
+                )}
+            </>
         )
     }
+
 
     if (currentView === "clinic") {
         return (
@@ -875,11 +705,11 @@ export default function MeghBondhuApp() {
                         onClick={goBack}
                         className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
                     >
-                        <ArrowLeft className="w-6 h-6"/>
+                        <ArrowLeft className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
-                            <MapPin className="w-6 h-6 text-amber-200"/>
+                            <MapPin className="w-6 h-6 text-amber-200" />
                         </div>
                         <span className="font-semibold text-slate-800 text-lg">{t.clinicTitle}</span>
                     </div>
@@ -951,7 +781,7 @@ export default function MeghBondhuApp() {
                                 <div className="p-4">
                                     <div className="flex items-center gap-4">
                                         <div className={`p-3 rounded-lg bg-gray-100`}>
-                                            <service.icon className={`w-6 h-6 ${service.color}`}/>
+                                            <service.icon className={`w-6 h-6 ${service.color}`} />
                                         </div>
                                         <div className="flex-1 text-left">
                                             <h3 className="font-semibold text-slate-800 text-base">{service.title}</h3>
@@ -964,7 +794,6 @@ export default function MeghBondhuApp() {
                     </div>
                 </div>
             </div>
-            {/*<Chatbot />*/}
         </div>
     )
 }
