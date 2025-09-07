@@ -20,11 +20,13 @@ export const translations = {
                     title: "Thunderstorm Advisory",
                     description: "Essential safety guidelines and precautions during lightning storms and thunderstorms",
                     file: "/pdfs/Thunderstorm_Advisory.pdf",
+                    icon: '🌤'
                 },
                 {
                     title: "World Meteorological Day",
                     description: "Information about World Meteorological Day and weather awareness",
                     file: "/pdfs/World_Meteorological_Day.pdf",
+                    icon: '🧊'
                 },
             ],
         },
@@ -153,11 +155,13 @@ export const translations = {
                     title: "বজ্রপাত সচেতনতা ও নিরাপত্তা",
                     description: "বজ্রপাত ও বজ্রঝড়ের সময় প্রয়োজনীয় নিরাপত্তা নির্দেশিকা এবং সতর্কতা",
                     file: "/pdfs/Thunderstorm_Advisory.pdf",
+                    icon: '🌤'
                 },
                 {
                     title: "বিশ্ব আবহাওয়া দিবস",
                     description: "বিশ্ব আবহাওয়া দিবস এবং আবহাওয়া সচেতনতা সম্পর্কে তথ্য",
                     file: "/pdfs/World_Meteorological_Day.pdf",
+                    icon: '🧊'
                 },
             ],
         },
