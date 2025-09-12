@@ -719,17 +719,17 @@ export default function MeghBondhuApp() {
                     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                         <iframe
                             width="100%"
-                            height="400px"
+                            height="600px"
                             frameBorder="0"
                             allowFullScreen
                             allow="geolocation"
-                            src="//umap.hotosm.org/en/map/dhaka-thrive-umap-dashboard_80?scaleControl=false&miniMap=false&scrollWheelZoom=false&zoomControl=true&editMode=disabled&moreControl=true&searchControl=null&tilelayersControl=null&embedControl=null&datalayersControl=true&onLoadPanel=caption&captionBar=false&captionMenus=true"
+                            src="https://umap.openstreetmap.fr/en/map/megh-bondhu_1270719#17/23.82599/90.36386"
                             className="w-full"
                         />
                         <div className="p-4 bg-gray-50 border-t">
                             <p className="text-sm text-slate-600">
                                 <a
-                                    href="//umap.hotosm.org/en/map/dhaka-thrive-umap-dashboard_80?scaleControl=false&miniMap=false&scrollWheelZoom=true&zoomControl=true&editMode=disabled&moreControl=true&searchControl=null&tilelayersControl=null&embedControl=null&datalayersControl=true&onLoadPanel=caption&captionBar=false&captionMenus=true"
+                                    href="https://umap.openstreetmap.fr/en/map/megh-bondhu_1270719#17/23.82599/90.36386"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-blue-600 hover:text-blue-800 underline"
