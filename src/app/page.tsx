@@ -5,7 +5,7 @@ import {Sun, Leaf, MapPin, FileText, ArrowLeft, Calendar, Thermometer, CloudRain
 import { translations, type Language } from "@/lib/translations"
 import rainfallData from "@/data/rainfall.json"
 import temperatureData from "@/data/temperature.json"
-import Chatbot from "@/app/components/Chatbot";
+// import Chatbot from "@/app/components/Chatbot";
 interface WeatherData {
     temperature: number
     feelsLike: number
@@ -198,7 +198,7 @@ export default function MeghBondhuApp() {
         } else if (serviceType === "awareness") {
             setCurrentView("awareness")
         } else if (serviceType === "clinic") {
-            // setCurrentView("clinic")
+            setCurrentView("clinic")
         }
     }
 
@@ -630,67 +630,68 @@ export default function MeghBondhuApp() {
         const documentList = t.awarenessDetail.documents
 
         return (
-            <div className="min-h-screen bg-gray-50">
-                <div className="bg-amber-400 px-4 py-6 flex items-center justify-between">
-                    <button
-                        onClick={goBack}
-                        className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
-                    >
-                        <ArrowLeft className="w-6 h-6" />
-                    </button>
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
-                            <FileText className="w-6 h-6 text-amber-200" />
+            <>
+                <div className="min-h-screen bg-gray-50">
+                    <div className="bg-amber-400 px-4 py-6 flex items-center justify-between">
+                        <button
+                            onClick={goBack}
+                            className="flex items-center gap-2 text-slate-700 hover:bg-amber-300 rounded p-1 transition-colors"
+                        >
+                            <ArrowLeft className="w-6 h-6" />
+                        </button>
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
+                                <FileText className="w-6 h-6 text-amber-200" />
+                            </div>
+                            <span className="font-semibold text-slate-800 text-lg">{t.awarenessTitle}</span>
                         </div>
-                        <span className="font-semibold text-slate-800 text-lg">{t.awarenessTitle}</span>
+                        <button
+                            onClick={toggleLanguage}
+                            className="px-3 py-1 text-slate-700 hover:bg-amber-300 rounded transition-colors"
+                        >
+                            {t.languageSwitch}
+                        </button>
                     </div>
-                    <button
-                        onClick={toggleLanguage}
-                        className="px-3 py-1 text-slate-700 hover:bg-amber-300 rounded transition-colors"
-                    >
-                        {t.languageSwitch}
-                    </button>
-                </div>
 
-                <div className="flex justify-center">
-                    <div className="w-full max-w-md">
-                        <div className="p-4 space-y-4">
-                            <div className="bg-white rounded-lg shadow-sm p-4">
-                                <h3 className="font-medium text-slate-800 mb-4">{t.awarenessDetail.title}</h3>
-                                <div className="space-y-3">
-                                    {documentList.map((document, index) => (
-                                        <div
-                                            key={index}
-                                            className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <div className="p-2 bg-red-100 rounded-lg">
-                                                    {document.icon || <FileText className="w-5 h-5 text-red-600" />}
 
-                                                </div>
-                                                <div>
-                                                    <h4 className="font-medium text-slate-800">{document.title}</h4>
-                                                    <p className="text-sm text-slate-600">{document.description}</p>
-                                                </div>
-                                            </div>
-                                            <a
-                                                href={document.file}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="px-3 py-1 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 transition-colors"
+                    <div className="flex justify-center">
+                        <div className="w-full max-w-md">
+                            <div className="p-4 space-y-4">
+                                <div className="bg-white rounded-lg shadow-sm p-4">
+                                    <h3 className="font-medium text-slate-800 mb-4">{t.awarenessDetail.title}</h3>
+                                    <div className="space-y-3">
+                                        {documentList.map((document, index) => (
+                                            <div
+                                                key={index}
+                                                className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                                             >
-                                                {t.awarenessDetail.viewButton}
-                                            </a>
-                                        </div>
-                                    ))}
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2 bg-red-100 rounded-lg">
+                                                        {document.icon || <FileText className="w-5 h-5 text-red-600" />}
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="font-medium text-slate-800">{document.title}</h4>
+                                                        <p className="text-sm text-slate-600">{document.description}</p>
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    onClick={() => window.open(document.file, "_blank")}
+                                                    className="px-3 py-1 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 transition-colors"
+                                                >
+                                                    {t.awarenessDetail.viewButton}
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </>
         )
     }
+
 
     if (currentView === "clinic") {
         return (
@@ -720,17 +721,17 @@ export default function MeghBondhuApp() {
                     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                         <iframe
                             width="100%"
-                            height="400px"
+                            height="600px"
                             frameBorder="0"
                             allowFullScreen
                             allow="geolocation"
-                            src="//umap.hotosm.org/en/map/dhaka-thrive-umap-dashboard_80?scaleControl=false&miniMap=false&scrollWheelZoom=false&zoomControl=true&editMode=disabled&moreControl=true&searchControl=null&tilelayersControl=null&embedControl=null&datalayersControl=true&onLoadPanel=caption&captionBar=false&captionMenus=true"
+                            src="https://umap.openstreetmap.fr/en/map/megh-bondhu_1270719#17/23.82599/90.36386"
                             className="w-full"
                         />
                         <div className="p-4 bg-gray-50 border-t">
                             <p className="text-sm text-slate-600">
                                 <a
-                                    href="//umap.hotosm.org/en/map/dhaka-thrive-umap-dashboard_80?scaleControl=false&miniMap=false&scrollWheelZoom=true&zoomControl=true&editMode=disabled&moreControl=true&searchControl=null&tilelayersControl=null&embedControl=null&datalayersControl=true&onLoadPanel=caption&captionBar=false&captionMenus=true"
+                                    href="https://umap.openstreetmap.fr/en/map/megh-bondhu_1270719#17/23.82599/90.36386"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-blue-600 hover:text-blue-800 underline"
