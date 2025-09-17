@@ -267,7 +267,7 @@ export default function MeghBondhuApp() {
                         <ArrowLeft className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
+                        <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center">
                             <Sun className="w-6 h-6 text-amber-200" />
                         </div>
                         <span className="font-semibold text-slate-800 text-lg">{t.todaysWeatherDetail.title}</span>
@@ -428,7 +428,7 @@ export default function MeghBondhuApp() {
                         <ArrowLeft className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
+                        <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center">
                             <Calendar className="w-6 h-6 text-amber-200" />
                         </div>
                         <span className="font-semibold text-slate-800 text-lg">{t.futureWeatherDetail.selectDate}</span>
@@ -537,7 +537,7 @@ export default function MeghBondhuApp() {
                         <ArrowLeft className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
+                        <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center">
                             <Thermometer className="w-6 h-6 text-amber-200" />
                         </div>
                         <span className="font-semibold text-slate-800 text-lg">
@@ -667,7 +667,7 @@ export default function MeghBondhuApp() {
                             <ArrowLeft className="w-6 h-6" />
                         </button>
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
+                            <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center">
                                 <FileText className="w-6 h-6 text-amber-200" />
                             </div>
                             <span className="font-semibold text-slate-800 text-lg">{t.awarenessTitle}</span>
@@ -777,7 +777,7 @@ export default function MeghBondhuApp() {
                         <ArrowLeft className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
+                        <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center">
                             <MapPin className="w-6 h-6 text-amber-200" />
                         </div>
                         <span className="font-semibold text-slate-800 text-lg">{t.clinicTitle}</span>
@@ -825,8 +825,10 @@ export default function MeghBondhuApp() {
             <div className="bg-amber-400 px-4 py-6 flex items-center justify-between">
                 <div className="w-6 h-6"></div>
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
-                        <div className="w-8 h-8 bg-amber-200 rounded-full"></div>
+                    {/*<div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">*/}
+                    {/*    <div className="w-8 h-8 bg-amber-200 rounded-full"></div>*/}
+                    <div className="w-10 h-10 rounded-full overflow-hidden">
+                        <img src="/images/meghbondhu-logo.png" alt="MeghBondhu Logo" className="w-12 h-12 object-cover"/>
                     </div>
                     <span className="font-semibold text-slate-800 text-lg">{t.mobileHeader}</span>
                 </div>
@@ -834,7 +836,7 @@ export default function MeghBondhuApp() {
                     onClick={toggleLanguage}
                     className="px-3 py-1 text-slate-700 hover:bg-amber-300 rounded transition-colors"
                 >
-                    {t.languageSwitch}
+                {t.languageSwitch}
                 </button>
             </div>
 
