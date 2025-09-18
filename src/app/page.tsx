@@ -667,7 +667,7 @@ export default function MeghBondhuApp() {
                             <ArrowLeft className="w-6 h-6" />
                         </button>
                         <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center">
+                            <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
                                 <FileText className="w-6 h-6 text-amber-200" />
                             </div>
                             <span className="font-semibold text-slate-800 text-lg">{t.awarenessTitle}</span>
