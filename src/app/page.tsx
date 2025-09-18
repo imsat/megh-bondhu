@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import {Sun, Leaf, MapPin, FileText, ArrowLeft, Calendar, Thermometer, CloudRain, Wind, Gauge, Eye} from "lucide-react"
+import {Sun, Leaf, MapPin, FileText, ArrowLeft, Calendar, Thermometer, CloudRain, Wind, Gauge, Eye, X, Download, ExternalLink,} from "lucide-react"
 import { translations, type Language } from "@/lib/translations"
 import rainfallData from "@/data/rainfall.json"
 import temperatureData from "@/data/temperature.json"
@@ -43,6 +43,7 @@ export default function MeghBondhuApp() {
     const [forecastData, setForecastData] = useState<ForecastData | null>(null)
     const [weatherLoading, setWeatherLoading] = useState(false)
     const [weatherError, setWeatherError] = useState<string | null>(null)
+    const [selectedImage, setSelectedImage] = useState<{ src: string; title: string } | null>(null)
     const t = translations[language]
 
     const fetchTodaysWeather = async () => {
@@ -626,8 +627,34 @@ export default function MeghBondhuApp() {
         )
     }
 
+    // const documentList = t.awarenessDetail.documents
     if (currentView === "awareness") {
-        const documentList = t.awarenessDetail.documents
+        const awarenessImages = [
+            {
+                src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Thunderstorm1.jpg-OUybWc4Kv4qwSroGyGeJRhQrgqagqo.jpeg",
+                title: language === "bn" ? "বজ্রপাত থেকে নিরাপদ থাকতে যা করণীয়" : "Thunderstorm Safety Guidelines",
+                description:
+                    language === "bn" ? "বজ্রপাতের সময় নিরাপত্তার জন্য করণীয় ও বর্জনীয়" : "Do's and don'ts during thunderstorms",
+            },
+            {
+                src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Thunderstorm2.jpg-rQgYSlyJaDT9En4CsVnqqs20QR6ivw.jpeg",
+                title: language === "bn" ? "বজ্রপাত কি ও বজ্রঝড়ের লক্ষণ" : "Understanding Thunderstorms",
+                description:
+                    language === "bn"
+                        ? "বজ্রপাত সম্পর্কে বিস্তারিত তথ্য ও সতর্কতা"
+                        : "Detailed information about thunderstorms and precautions",
+            },
+            {
+                src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Heatwave.jpg-mn6RPDy0fFeA0ggZnym3NovTJj5yfp.jpeg",
+                title: language === "bn" ? "তীব্র গরম ও হিটওয়েভে করণীয়" : "Heatwave Safety Measures",
+                description: language === "bn" ? "গরমের দিনে স্বাস্থ্য সুরক্ষার উপায়" : "Health protection during extreme heat",
+            },
+            {
+                src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/waterlogging.jpg-UoUAsOj2STR7YYwUbF2ZzW87UXDZpO.jpeg",
+                title: language === "bn" ? "জলাবদ্ধতা ঝুঁকি ও সুরক্ষার বার্তা" : "Waterlogging Safety Information",
+                description: language === "bn" ? "জলাবদ্ধতার সময় নিরাপত্তা ব্যবস্থা" : "Safety measures during waterlogging",
+            },
+        ]
 
         return (
             <>
@@ -640,7 +667,7 @@ export default function MeghBondhuApp() {
                             <ArrowLeft className="w-6 h-6" />
                         </button>
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
+                            <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center">
                                 <FileText className="w-6 h-6 text-amber-200" />
                             </div>
                             <span className="font-semibold text-slate-800 text-lg">{t.awarenessTitle}</span>
@@ -653,32 +680,33 @@ export default function MeghBondhuApp() {
                         </button>
                     </div>
 
-
                     <div className="flex justify-center">
                         <div className="w-full max-w-md">
                             <div className="p-4 space-y-4">
                                 <div className="bg-white rounded-lg shadow-sm p-4">
-                                    <h3 className="font-medium text-slate-800 mb-4">{t.awarenessDetail.title}</h3>
+                                    <h3 className="font-medium text-slate-800 mb-4">
+                                        {language === "bn" ? "আবহাওয়া সচেতনতা তথ্য" : "Weather Awareness Information"}
+                                    </h3>
                                     <div className="space-y-3">
-                                        {documentList.map((document, index) => (
+                                        {awarenessImages.map((image, index) => (
                                             <div
                                                 key={index}
                                                 className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <div className="p-2 bg-red-100 rounded-lg">
-                                                        {document.icon || <FileText className="w-5 h-5 text-red-600" />}
+                                                    <div className="p-2 bg-blue-100 rounded-lg">
+                                                        <FileText className="w-5 h-5 text-blue-600" />
                                                     </div>
                                                     <div>
-                                                        <h4 className="font-medium text-slate-800">{document.title}</h4>
-                                                        <p className="text-sm text-slate-600">{document.description}</p>
+                                                        <h4 className="font-medium text-slate-800">{image.title}</h4>
+                                                        <p className="text-sm text-slate-600">{image.description}</p>
                                                     </div>
                                                 </div>
                                                 <button
-                                                    onClick={() => window.open(document.file, "_blank")}
+                                                    onClick={() => setSelectedImage({ src: image.src, title: image.title })}
                                                     className="px-3 py-1 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 transition-colors"
                                                 >
-                                                    {t.awarenessDetail.viewButton}
+                                                    {language === "bn" ? "দেখুন" : "View"}
                                                 </button>
                                             </div>
                                         ))}
@@ -688,6 +716,51 @@ export default function MeghBondhuApp() {
                         </div>
                     </div>
                 </div>
+
+                {selectedImage && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+                            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                                <h2 className="text-lg font-semibold text-slate-800 truncate pr-4">{selectedImage.title}</h2>
+                                <div className="flex items-center gap-2">
+                                    <a
+                                        href={selectedImage.src}
+                                        download
+                                        className="p-2 text-slate-600 hover:text-slate-800 hover:bg-gray-100 rounded-lg transition-colors"
+                                        title={language === "bn" ? "ডাউনলোড করুন" : "Download"}
+                                    >
+                                        <Download className="w-5 h-5" />
+                                    </a>
+                                    <a
+                                        href={selectedImage.src}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="p-2 text-slate-600 hover:text-slate-800 hover:bg-gray-100 rounded-lg transition-colors"
+                                        title={language === "bn" ? "নতুন ট্যাবে খুলুন" : "Open in new tab"}
+                                    >
+                                        <ExternalLink className="w-5 h-5" />
+                                    </a>
+                                    <button
+                                        onClick={() => setSelectedImage(null)}
+                                        className="p-2 text-slate-600 hover:text-slate-800 hover:bg-gray-100 rounded-lg transition-colors"
+                                    >
+                                        <X className="w-5 h-5" />
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="flex-1 overflow-auto p-4">
+                                <div className="flex justify-center">
+                                    <img
+                                        src={selectedImage.src || "/placeholder.svg"}
+                                        alt={selectedImage.title}
+                                        className="max-w-full h-auto rounded-lg shadow-sm"
+                                        style={{ maxHeight: "calc(90vh - 120px)" }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </>
         )
     }
@@ -752,8 +825,10 @@ export default function MeghBondhuApp() {
             <div className="bg-amber-400 px-4 py-6 flex items-center justify-between">
                 <div className="w-6 h-6"></div>
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
-                        <div className="w-8 h-8 bg-amber-200 rounded-full"></div>
+                    {/*<div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">*/}
+                    {/*    <div className="w-8 h-8 bg-amber-200 rounded-full"></div>*/}
+                    <div className="w-10 h-10 rounded-full overflow-hidden">
+                        <img src="/images/meghbondhu-logo.png" alt="MeghBondhu Logo" className="w-10 h-10 object-cover"/>
                     </div>
                     <span className="font-semibold text-slate-800 text-lg">{t.mobileHeader}</span>
                 </div>
