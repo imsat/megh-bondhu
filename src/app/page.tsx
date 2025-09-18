@@ -267,7 +267,7 @@ export default function MeghBondhuApp() {
                         <ArrowLeft className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
                             <Sun className="w-6 h-6 text-amber-200" />
                         </div>
                         <span className="font-semibold text-slate-800 text-lg">{t.todaysWeatherDetail.title}</span>
@@ -283,134 +283,134 @@ export default function MeghBondhuApp() {
                 <div className="flex justify-center">
                     <div className="w-full max-w-md">
                         <div className="p-4 space-y-4">
-                    {weatherLoading && (
-                        <div className="bg-white rounded-lg shadow-sm p-6 text-center">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500 mx-auto mb-4"></div>
-                            <p className="text-slate-600">{t.todaysWeatherDetail.loading}</p>
-                        </div>
-                    )}
-
-                    {weatherError && !todaysWeather && (
-                        <div className="bg-white rounded-lg shadow-sm p-6 text-center">
-                            <p className="text-red-600 mb-4">{t.todaysWeatherDetail.error}</p>
-                            <button
-                                onClick={fetchTodaysWeather}
-                                className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
-                            >
-                                Retry
-                            </button>
-                        </div>
-                    )}
-
-                    {todaysWeather && (
-                        <>
-                            {/* Main Temperature Card */}
-                            <div className="bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg shadow-sm p-6 text-white">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <h2 className="text-3xl font-bold">{todaysWeather.temperature}°C</h2>
-                                        <p className="text-blue-100 capitalize">{todaysWeather.description}</p>
-                                        <p className="text-blue-100 text-sm">
-                                            {t.todaysWeatherDetail.feelsLike}: {todaysWeather.feelsLike}°C
-                                        </p>
-                                    </div>
-                                    <div className="text-right">
-                                        <img src={`https:${todaysWeather.icon}`} alt="Weather icon" className="w-16 h-16" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Weather Details Grid */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-white rounded-lg shadow-sm p-4">
-                                    <div className="flex items-center gap-3">
-                                        <FileText className="w-5 h-5 text-blue-500" />
-                                        <div>
-                                            <p className="text-sm text-slate-600">{t.todaysWeatherDetail.humidity}</p>
-                                            <p className="font-semibold text-slate-800">{todaysWeather.humidity}%</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="bg-white rounded-lg shadow-sm p-4">
-                                    <div className="flex items-center gap-3">
-                                        <Wind className="w-5 h-5 text-green-500" />
-                                        <div>
-                                            <p className="text-sm text-slate-600">{t.todaysWeatherDetail.windSpeed}</p>
-                                            <p className="font-semibold text-slate-800">{todaysWeather.windSpeed} km/h</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="bg-white rounded-lg shadow-sm p-4">
-                                    <div className="flex items-center gap-3">
-                                        <Gauge className="w-5 h-5 text-purple-500" />
-                                        <div>
-                                            <p className="text-sm text-slate-600">{t.todaysWeatherDetail.pressure}</p>
-                                            <p className="font-semibold text-slate-800">{todaysWeather.pressure} hPa</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="bg-white rounded-lg shadow-sm p-4">
-                                    <div className="flex items-center gap-3">
-                                        <Eye className="w-5 h-5 text-gray-500" />
-                                        <div>
-                                            <p className="text-sm text-slate-600">{t.todaysWeatherDetail.visibility}</p>
-                                            <p className="font-semibold text-slate-800">{todaysWeather.visibility} km</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* UV Index */}
-                            <div className="bg-white rounded-lg shadow-sm p-4">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm text-slate-600">{t.todaysWeatherDetail.uvIndex}</span>
-                                    <span className="font-semibold text-slate-800">{todaysWeather.uvIndex}</span>
-                                </div>
-                            </div>
-
-                            {/* Hourly Forecast */}
-                            {forecastData && forecastData.hourly.length > 0 && (
-                                <div className="bg-white rounded-lg shadow-sm p-4">
-                                    <h3 className="font-semibold text-slate-800 mb-4">{t.hourlyForecast}</h3>
-                                    <div className="space-y-3">
-                                        {forecastData.hourly.map((hour, index) => {
-                                            const time = new Date(hour.time)
-                                            const timeStr = time.toLocaleTimeString("en-US", {
-                                                hour: "numeric",
-                                                minute: "2-digit",
-                                                hour12: true,
-                                            })
-
-                                            return (
-                                                <div
-                                                    key={hour.time}
-                                                    className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0"
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-16 text-sm font-medium text-slate-700">{timeStr}</div>
-                                                    </div>
-
-                                                    <div className="flex items-center gap-3">
-                                                        <img src={`https:${hour.icon}`} alt={hour.condition} className="w-8 h-8" />
-                                                        <div className="text-right">
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="font-semibold text-slate-800">{hour.temperature}°C</span>
-                                                            </div>
-                                                            <div className="text-xs text-blue-600">{hour.chanceOfRain}% rain</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )
-                                        })}
-                                    </div>
+                            {weatherLoading && (
+                                <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500 mx-auto mb-4"></div>
+                                    <p className="text-slate-600">{t.todaysWeatherDetail.loading}</p>
                                 </div>
                             )}
-                        </>
-                    )}
-                </div>
+
+                            {weatherError && !todaysWeather && (
+                                <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+                                    <p className="text-red-600 mb-4">{t.todaysWeatherDetail.error}</p>
+                                    <button
+                                        onClick={fetchTodaysWeather}
+                                        className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
+                                    >
+                                        Retry
+                                    </button>
+                                </div>
+                            )}
+
+                            {todaysWeather && (
+                                <>
+                                    {/* Main Temperature Card */}
+                                    <div className="bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg shadow-sm p-6 text-white">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <h2 className="text-3xl font-bold">{todaysWeather.temperature}°C</h2>
+                                                <p className="text-blue-100 capitalize">{todaysWeather.description}</p>
+                                                <p className="text-blue-100 text-sm">
+                                                    {t.todaysWeatherDetail.feelsLike}: {todaysWeather.feelsLike}°C
+                                                </p>
+                                            </div>
+                                            <div className="text-right">
+                                                <img src={`https:${todaysWeather.icon}`} alt="Weather icon" className="w-16 h-16" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Weather Details Grid */}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-white rounded-lg shadow-sm p-4">
+                                            <div className="flex items-center gap-3">
+                                                <FileText className="w-5 h-5 text-blue-500" />
+                                                <div>
+                                                    <p className="text-sm text-slate-600">{t.todaysWeatherDetail.humidity}</p>
+                                                    <p className="font-semibold text-slate-800">{todaysWeather.humidity}%</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-white rounded-lg shadow-sm p-4">
+                                            <div className="flex items-center gap-3">
+                                                <Wind className="w-5 h-5 text-green-500" />
+                                                <div>
+                                                    <p className="text-sm text-slate-600">{t.todaysWeatherDetail.windSpeed}</p>
+                                                    <p className="font-semibold text-slate-800">{todaysWeather.windSpeed} km/h</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-white rounded-lg shadow-sm p-4">
+                                            <div className="flex items-center gap-3">
+                                                <Gauge className="w-5 h-5 text-purple-500" />
+                                                <div>
+                                                    <p className="text-sm text-slate-600">{t.todaysWeatherDetail.pressure}</p>
+                                                    <p className="font-semibold text-slate-800">{todaysWeather.pressure} hPa</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-white rounded-lg shadow-sm p-4">
+                                            <div className="flex items-center gap-3">
+                                                <Eye className="w-5 h-5 text-gray-500" />
+                                                <div>
+                                                    <p className="text-sm text-slate-600">{t.todaysWeatherDetail.visibility}</p>
+                                                    <p className="font-semibold text-slate-800">{todaysWeather.visibility} km</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* UV Index */}
+                                    <div className="bg-white rounded-lg shadow-sm p-4">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm text-slate-600">{t.todaysWeatherDetail.uvIndex}</span>
+                                            <span className="font-semibold text-slate-800">{todaysWeather.uvIndex}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Hourly Forecast */}
+                                    {forecastData && forecastData.hourly.length > 0 && (
+                                        <div className="bg-white rounded-lg shadow-sm p-4">
+                                            <h3 className="font-semibold text-slate-800 mb-4">{t.hourlyForecast}</h3>
+                                            <div className="space-y-3">
+                                                {forecastData.hourly.map((hour, index) => {
+                                                    const time = new Date(hour.time)
+                                                    const timeStr = time.toLocaleTimeString("en-US", {
+                                                        hour: "numeric",
+                                                        minute: "2-digit",
+                                                        hour12: true,
+                                                    })
+
+                                                    return (
+                                                        <div
+                                                            key={hour.time}
+                                                            className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0"
+                                                        >
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="w-16 text-sm font-medium text-slate-700">{timeStr}</div>
+                                                            </div>
+
+                                                            <div className="flex items-center gap-3">
+                                                                <img src={`https:${hour.icon}`} alt={hour.condition} className="w-8 h-8" />
+                                                                <div className="text-right">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className="font-semibold text-slate-800">{hour.temperature}°C</span>
+                                                                    </div>
+                                                                    <div className="text-xs text-blue-600">{hour.chanceOfRain}% rain</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -428,7 +428,7 @@ export default function MeghBondhuApp() {
                         <ArrowLeft className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
                             <Calendar className="w-6 h-6 text-amber-200" />
                         </div>
                         <span className="font-semibold text-slate-800 text-lg">{t.futureWeatherDetail.selectDate}</span>
@@ -443,71 +443,71 @@ export default function MeghBondhuApp() {
                 <div className="flex justify-center">
                     <div className="w-full max-w-md">
                         <div className="p-4 space-y-6">
-                    <div className="bg-white rounded-lg shadow-sm p-6">
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">{t.futureWeatherDetail.year}</label>
-                                <select
-                                    value={selectedYear}
-                                    onChange={(e) => setSelectedYear(e.target.value)}
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                                >
-                                    <option value="">{t.futureWeatherDetail.selectYear}</option>
-                                    {Array.from({ length: 2 }, (_, i) => 2026 + i).map((year) => (
-                                        <option key={year} value={year}>
-                                            {year}
-                                        </option>
-                                    ))}
-                                </select>
+                            <div className="bg-white rounded-lg shadow-sm p-6">
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-2">{t.futureWeatherDetail.year}</label>
+                                        <select
+                                            value={selectedYear}
+                                            onChange={(e) => setSelectedYear(e.target.value)}
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                                        >
+                                            <option value="">{t.futureWeatherDetail.selectYear}</option>
+                                            {Array.from({ length: 2 }, (_, i) => 2026 + i).map((year) => (
+                                                <option key={year} value={year}>
+                                                    {year}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-2">{t.futureWeatherDetail.month}</label>
+                                        <select
+                                            value={selectedMonth}
+                                            onChange={(e) => setSelectedMonth(e.target.value)}
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                                        >
+                                            <option value="">{t.futureWeatherDetail.selectMonth}</option>
+                                            {Array.from({ length: 12 }, (_, i) => {
+                                                const monthNumber = i + 1;
+                                                const monthName = new Date(0, i).toLocaleString("en-US", { month: "long" });
+                                                return (
+                                                    <option key={monthNumber} value={monthNumber}>
+                                                        {monthName}
+                                                    </option>
+                                                );
+                                            })}
+
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-2">{t.futureWeatherDetail.date}</label>
+                                        <select
+                                            value={selectedDate}
+                                            onChange={(e) => setSelectedDate(e.target.value)}
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                                        >
+                                            <option value="">{t.futureWeatherDetail.selectDate}</option>
+                                            {Array.from({ length: 31 }, (_, i) => i + 1).map((date) => (
+                                                <option key={date} value={date}>
+                                                    {date}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <button
+                                        onClick={handleDateSubmit}
+                                        disabled={!selectedYear || !selectedMonth || !selectedDate}
+                                        className="w-full bg-amber-500 text-white py-3 rounded-lg font-medium hover:bg-amber-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                                    >
+                                        {t.futureWeatherDetail.selectDate}
+                                    </button>
+                                </div>
                             </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">{t.futureWeatherDetail.month}</label>
-                                <select
-                                    value={selectedMonth}
-                                    onChange={(e) => setSelectedMonth(e.target.value)}
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                                >
-                                    <option value="">{t.futureWeatherDetail.selectMonth}</option>
-                                    {Array.from({ length: 12 }, (_, i) => {
-                                        const monthNumber = i + 1;
-                                        const monthName = new Date(0, i).toLocaleString("en-US", { month: "long" });
-                                        return (
-                                            <option key={monthNumber} value={monthNumber}>
-                                                {monthName}
-                                            </option>
-                                        );
-                                    })}
-
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">{t.futureWeatherDetail.date}</label>
-                                <select
-                                    value={selectedDate}
-                                    onChange={(e) => setSelectedDate(e.target.value)}
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                                >
-                                    <option value="">{t.futureWeatherDetail.selectDate}</option>
-                                    {Array.from({ length: 31 }, (_, i) => i + 1).map((date) => (
-                                        <option key={date} value={date}>
-                                            {date}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <button
-                                onClick={handleDateSubmit}
-                                disabled={!selectedYear || !selectedMonth || !selectedDate}
-                                className="w-full bg-amber-500 text-white py-3 rounded-lg font-medium hover:bg-amber-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-                            >
-                                {t.futureWeatherDetail.selectDate}
-                            </button>
                         </div>
-                    </div>
-                </div>
                     </div>
                 </div>
             </div>
@@ -537,7 +537,7 @@ export default function MeghBondhuApp() {
                         <ArrowLeft className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
                             <Thermometer className="w-6 h-6 text-amber-200" />
                         </div>
                         <span className="font-semibold text-slate-800 text-lg">
@@ -578,7 +578,7 @@ export default function MeghBondhuApp() {
                                     <h2 className="text-lg font-semibold text-slate-800 mb-4">{tempData.title}</h2>
 
                                     <div className="space-y-4">
-                                    {Object.entries(tempData.sections).map(([key, content]) => (
+                                        {Object.entries(tempData.sections).map(([key, content]) => (
                                             <div key={key} className="border-b border-gray-100 pb-4 last:border-b-0">
                                                 <div
                                                     className="whitespace-pre-line text-slate-700 leading-relaxed">{content}</div>
@@ -680,7 +680,6 @@ export default function MeghBondhuApp() {
                         </button>
                     </div>
 
-
                     <div className="flex justify-center">
                         <div className="w-full max-w-md">
                             <div className="p-4 space-y-4">
@@ -766,6 +765,7 @@ export default function MeghBondhuApp() {
         )
     }
 
+
     if (currentView === "clinic") {
         return (
             <div className="min-h-screen bg-gray-50">
@@ -777,7 +777,7 @@ export default function MeghBondhuApp() {
                         <ArrowLeft className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">
                             <MapPin className="w-6 h-6 text-amber-200" />
                         </div>
                         <span className="font-semibold text-slate-800 text-lg">{t.clinicTitle}</span>
@@ -828,7 +828,7 @@ export default function MeghBondhuApp() {
                     {/*<div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">*/}
                     {/*    <div className="w-8 h-8 bg-amber-200 rounded-full"></div>*/}
                     <div className="w-10 h-10 rounded-full overflow-hidden">
-                        <img src="/images/meghbondhu-logo.png" alt="MeghBondhu Logo" className="w-12 h-12 object-cover"/>
+                        <img src="/images/meghbondhu-logo.png" alt="MeghBondhu Logo" className="w-10 h-10 object-cover"/>
                     </div>
                     <span className="font-semibold text-slate-800 text-lg">{t.mobileHeader}</span>
                 </div>
@@ -836,33 +836,33 @@ export default function MeghBondhuApp() {
                     onClick={toggleLanguage}
                     className="px-3 py-1 text-slate-700 hover:bg-amber-300 rounded transition-colors"
                 >
-                {t.languageSwitch}
+                    {t.languageSwitch}
                 </button>
             </div>
 
             <div className="flex justify-center">
                 <div className="w-full max-w-md">
-            <div className="p-4 space-y-4">
-                {services.map((service, index) => (
-                    <button
-                        key={index}
-                        onClick={() => handleServiceClick(service.id)}
-                        className="w-full bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                    >
-                        <div className="p-4">
-                            <div className="flex items-center gap-4">
-                                <div className={`p-3 rounded-lg bg-gray-100`}>
-                                    <service.icon className={`w-6 h-6 ${service.color}`} />
+                    <div className="p-4 space-y-4">
+                        {services.map((service, index) => (
+                            <button
+                                key={index}
+                                onClick={() => handleServiceClick(service.id)}
+                                className="w-full bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                            >
+                                <div className="p-4">
+                                    <div className="flex items-center gap-4">
+                                        <div className={`p-3 rounded-lg bg-gray-100`}>
+                                            <service.icon className={`w-6 h-6 ${service.color}`} />
+                                        </div>
+                                        <div className="flex-1 text-left">
+                                            <h3 className="font-semibold text-slate-800 text-base">{service.title}</h3>
+                                            <p className="text-sm text-slate-600 mt-1">{service.desc}</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="flex-1 text-left">
-                                    <h3 className="font-semibold text-slate-800 text-base">{service.title}</h3>
-                                    <p className="text-sm text-slate-600 mt-1">{service.desc}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </button>
-                ))}
-            </div>
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
             {/*<Chatbot />*/}
