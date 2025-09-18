@@ -827,8 +827,8 @@ export default function MeghBondhuApp() {
                 <div className="flex items-center gap-3">
                     {/*<div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center">*/}
                     {/*    <div className="w-8 h-8 bg-amber-200 rounded-full"></div>*/}
-                    <div className="w-10 h-10 rounded-full overflow-hidden">
-                        <img src="/images/meghbondhu-logo.png" alt="MeghBondhu Logo" className="w-10 h-10 object-cover"/>
+                    <div className="w-16 h-16 rounded-full overflow-hidden">
+                        <img src="/images/meghbondhu-logo.png" alt="MeghBondhu Logo" className="w-16 h-16 object-cover"/>
                     </div>
                     <span className="font-semibold text-slate-800 text-lg">{t.mobileHeader}</span>
                 </div>
