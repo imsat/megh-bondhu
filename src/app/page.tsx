@@ -798,13 +798,13 @@ export default function MeghBondhuApp() {
                             frameBorder="0"
                             allowFullScreen
                             allow="geolocation"
-                            src="https://umap.openstreetmap.fr/en/map/megh-bondhu_1270719#17/23.82599/90.36386"
+                            src="https://umap.openstreetmap.fr/en/map/map_1270719?scaleControl=false&miniMap=false&scrollWheelZoom=false&zoomControl=true&editMode=disabled&moreControl=true&searchControl=null&tilelayersControl=null&embedControl=null&datalayersControl=true&onLoadPanel=caption&captionBar=false&captionMenus=true"
                             className="w-full"
                         />
                         <div className="p-4 bg-gray-50 border-t">
                             <p className="text-sm text-slate-600">
                                 <a
-                                    href="https://umap.openstreetmap.fr/en/map/megh-bondhu_1270719#17/23.82599/90.36386"
+                                    href="https://umap.openstreetmap.fr/en/map/map_1270719?scaleControl=false&miniMap=false&scrollWheelZoom=false&zoomControl=true&editMode=disabled&moreControl=true&searchControl=null&tilelayersControl=null&embedControl=null&datalayersControl=true&onLoadPanel=caption&captionBar=false&captionMenus=true"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-blue-600 hover:text-blue-800 underline"
