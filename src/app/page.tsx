@@ -5,6 +5,7 @@ import {Sun, Leaf, MapPin, FileText, ArrowLeft, Calendar, Thermometer, CloudRain
 import { translations, type Language } from "@/lib/translations"
 import rainfallData from "@/data/rainfall.json"
 import temperatureData from "@/data/temperature.json"
+import Chatbot from "@/app/components/Chatbot";
 // import Chatbot from "@/app/components/Chatbot";
 interface WeatherData {
     temperature: number
@@ -866,6 +867,7 @@ export default function MeghBondhuApp() {
                 </div>
             </div>
             {/*<Chatbot />*/}
+            <a className="fixed bottom-4 p-2 right-4 bg-amber-400 shadow-2xl rounded-2xl flex flex-col overflow-hidden" href={'/chat'}>Chatbot</a>
         </div>
     )
 }
