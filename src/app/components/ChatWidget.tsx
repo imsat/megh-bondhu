@@ -223,7 +223,7 @@ export default function ChatWidget() {
 
             {isOpen && (
                 <div
-                    className="fixed bottom-24 right-6 w-96 h-96 bg-white rounded-lg shadow-2xl flex flex-col z-50 overflow-hidden">
+                    className="fixed bottom-24 right-6 w-86 h-96 bg-white rounded-lg shadow-2xl flex flex-col z-50 overflow-hidden">
                     {/* Header */}
                     <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-4">
                         <div className="flex items-center gap-3">
