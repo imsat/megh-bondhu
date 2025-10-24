@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { Send, Cloud, X, MessageCircle } from "lucide-react"
+import {useState, useRef, useEffect} from "react"
+import {Send, Cloud, X, MessageCircle} from "lucide-react"
+import clinicData from "@/data/clinics.json"
 
 interface Message {
     id: string
@@ -11,16 +12,17 @@ interface Message {
 }
 
 const MENU_OPTIONS = [
-    { label: "🌡️ আজকের আবহাওয়া", action: "current_weather" },
-    { label: "📅 ভবিষ্যতের আবহাওয়া", action: "forecast" },
-    { label: "📚 সচেতনতা", action: "awareness" },
-    { label: "🏥 ক্লিনিক খুঁজুন", action: "clinics" },
+    {label: "🌡️ আজকের আবহাওয়া", action: "আজকের আবহাওয়া"},
+    {label: "📅 ভবিষ্যতের আবহাওয়া", action: "ভবিষ্যতের আবহাওয়া"},
+    {label: "📚 সচেতনতা", action: "সচেতনতা"},
+    {label: "🏥 ক্লিনিক খুঁজুন", action: "ক্লিনিক খুঁজুন"},
 ]
 
 const AWARENESS_OPTIONS = [
-    { label: "🌊 বন্যা সচেতনতা", action: "flood" },
-    { label: "🌪️ ঘূর্ণিঝড় সচেতনতা", action: "cyclone" },
-    { label: "🔥 তাপপ্রবাহ সচেতনতা", action: "heatwave" },
+    {label: "⚡ বজ্রপাত সচেতনতা", action: "বজ্রপাত সচেতনতা"},
+    {label: "⛈️ বজ্রঝড়ের লক্ষণ", action: "বজ্রঝড়ের লক্ষণ"},
+    {label: "🔥 তাপপ্রবাহ সচেতনতা", action: "তাপপ্রবাহ সচেতনতা"},
+    {label: "🌊 জলাবদ্ধতা সচেতনতা", action: "জলাবদ্ধতা সচেতনতা"},
 ]
 
 export default function ChatWidget() {
@@ -38,12 +40,28 @@ export default function ChatWidget() {
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+        messagesEndRef.current?.scrollIntoView({behavior: "smooth"})
     }
 
     useEffect(() => {
         scrollToBottom()
     }, [messages])
+
+    const fetchWeatherData = async () => {
+        try {
+            const API_KEY = process.env.NEXT_PUBLIC_WEATHERAPI_KEY || "demo_key"
+            const city = process.env.NEXT_PUBLIC_WEATHER_LOCATION || "Dhaka" // Default to Dhaka, Bangladesh
+            const response = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}&days=1&aqi=no&alerts=no`)
+            if (!response.ok) {
+                throw new Error("Failed to fetch weather data")
+            }
+            const data = await response.json()
+            return data.current
+        } catch (error) {
+            console.error("Weather fetch error:", error)
+            return null
+        }
+    }
 
     const handleOptionClick = async (action: string) => {
         const userMessage: Message = {
@@ -54,20 +72,36 @@ export default function ChatWidget() {
 
         setMessages((prev) => [...prev, userMessage])
         setLoading(true)
+        if (action === "আজকের আবহাওয়া") {
+            const weatherData = await fetchWeatherData()
+            // const icon = weatherData?.condition?.icon
+            //     ? <img src={`https:${weatherData.condition.icon}`} alt="Weather icon" className="w-16 h-16 inline-block" />
+            //     : '🏙️'
+            let botResponse: Message
+            if (weatherData) {
+                botResponse = {
+                    id: (Date.now() + 1).toString(),
+                    type: "bot",
+                    content: `🏙️ আজকের আবহাওয়া\n\n🌡️ তাপমাত্রা: ${weatherData?.temp_c}°C\n🤔 অনুভূত তাপমাত্রা: ${weatherData?.feelslike_c}°C\n☁️ অবস্থা: ${weatherData?.condition?.text?.toLowerCase()}\n💧 আর্দ্রতা: ${weatherData?.humidity}%\n💨 বায়ু গতি: ${weatherData?.wind_kph} km/h\n👁️ দৃশ্যমানতা: ${weatherData?.vis_km} km\n🔆 UV সূচক: ${weatherData?.uv}`,
+                }
+            } else {
+                botResponse = {
+                    id: (Date.now() + 1).toString(),
+                    type: "bot",
+                    content: "❌ আবহাওয়ার তথ্য পেতে ব্যর্থ। অনুগ্রহ করে পরে চেষ্টা করুন।",
+                    options: MENU_OPTIONS,
+                }
+            }
+            setMessages((prev) => [...prev, botResponse])
+            setLoading(false)
+            return
+        }
 
         setTimeout(() => {
             let botResponse: Message
 
             switch (action) {
-                case "current_weather":
-                    botResponse = {
-                        id: (Date.now() + 1).toString(),
-                        type: "bot",
-                        content: `🏙️ ঢাকার আবহাওয়া\n\n🌡️ তাপমাত্রা: 28°C\n☁️ অবস্থা: আংশিক মেঘলা\n💧 আর্দ্রতা: 72%\n💨 বায়ু গতি: 12 km/h`,
-                    }
-                    break
-
-                case "forecast":
+                case "ভবিষ্যতের আবহাওয়া":
                     botResponse = {
                         id: (Date.now() + 1).toString(),
                         type: "bot",
@@ -75,7 +109,7 @@ export default function ChatWidget() {
                     }
                     break
 
-                case "awareness":
+                case "সচেতনতা":
                     botResponse = {
                         id: (Date.now() + 1).toString(),
                         type: "bot",
@@ -84,38 +118,59 @@ export default function ChatWidget() {
                     }
                     break
 
-                case "flood":
+                case "বজ্রপাত সচেতনতা":
                     botResponse = {
                         id: (Date.now() + 1).toString(),
                         type: "bot",
-                        content: `📘 বন্যা সচেতনতা গাইড\n\n✓ নিরাপদ স্থানে যান\n✓ জরুরি সামগ্রী প্রস্তুত রাখুন\n✓ স্থানীয় কর্তৃপক্ষের নির্দেশনা অনুসরণ করুন\n✓ পরিবারের সাথে যোগাযোগ রাখুন`,
+                        content: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Thunderstorm1.jpg-OUybWc4Kv4qwSroGyGeJRhQrgqagqo.jpeg',
                     }
                     break
-
-                case "cyclone":
+                case "বজ্রঝড়ের লক্ষণ":
                     botResponse = {
                         id: (Date.now() + 1).toString(),
                         type: "bot",
-                        content: `📘 ঘূর্ণিঝড় সচেতনতা গাইড\n\n✓ ঘরের ভিতরে থাকুন\n✓ জানালা এবং দরজা বন্ধ করুন\n✓ শক্তিশালী বাতাস থেকে দূরে থাকুন\n✓ জরুরি সেবা নম্বর সংরক্ষণ করুন`,
+                        content: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Thunderstorm2.jpg-rQgYSlyJaDT9En4CsVnqqs20QR6ivw.jpeg',
                     }
                     break
-
-                case "heatwave":
+                case "তাপপ্রবাহ সচেতনতা":
                     botResponse = {
                         id: (Date.now() + 1).toString(),
                         type: "bot",
-                        content: `📘 তাপপ্রবাহ সচেতনতা গাইড\n\n✓ প্রচুর পানি পান\n✓ হালকা রঙের পোশাক পরুন\n✓ দুপুরে বাইরে যাওয়া এড়িয়ে চলুন\n✓ বয়স্ক এবং শিশুদের যত্ন নিন`,
+                        content: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Heatwave.jpg-mn6RPDy0fFeA0ggZnym3NovTJj5yfp.jpeg',
                     }
                     break
-
-                case "clinics":
+                case "জলাবদ্ধতা সচেতনতা":
                     botResponse = {
                         id: (Date.now() + 1).toString(),
                         type: "bot",
-                        content: `🏥 ঢাকা শহরের ক্লিনিক\n\n1. ঢাকা মেডিকেল কলেজ হাসপাতাল\n   📍 শাহবাগ, ঢাকা\n   ☎️ +880-2-9661051\n\n2. বারডেম জেনারেল হাসপাতাল\n   📍 পান্থপথ, ঢাকা\n   ☎️ +880-2-8611881`,
+                        content: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/waterlogging.jpg-UoUAsOj2STR7YYwUbF2ZzW87UXDZpO.jpeg',
                     }
                     break
+                case "ক্লিনিক খুঁজুন":
 
+                    // Pick random 4–5
+                    const sample = clinicData.sort(() => 0.5 - Math.random()).slice(0, 5)
+
+                    // Format message
+                    const formatted = [
+                        "🏥 ঢাকা শহরের ক্লিনিক\n",
+                        ...sample.map((c, i) => {
+                            const name = c?.name
+                            const houseNumber = c?.housenumber
+                            const street = c?.street
+                            const parts = [];
+                            if (street) parts.push(`Road: ${street}`);
+                            if (houseNumber) parts.push(`House: ${houseNumber}`);
+
+                            return `${i + 1}. ${name}${parts.length ? `\n   📍 ${parts.join(', ')}` : ''}`;
+                        }),
+                    ].join("\n\n")
+                    botResponse = {
+                        id: (Date.now() + 1).toString(),
+                        type: "bot",
+                        content: formatted,
+                    }
+                    break
                 default:
                     botResponse = {
                         id: (Date.now() + 1).toString(),
@@ -163,15 +218,16 @@ export default function ChatWidget() {
                 className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 z-40 hover:scale-110"
                 aria-label="Open chat"
             >
-                {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
+                {isOpen ? <X className="w-6 h-6"/> : <MessageCircle className="w-6 h-6"/>}
             </button>
 
             {isOpen && (
-                <div className="fixed bottom-24 right-6 w-96 h-96 bg-white rounded-lg shadow-2xl flex flex-col z-50 overflow-hidden">
+                <div
+                    className="fixed bottom-24 right-6 w-96 h-96 bg-white rounded-lg shadow-2xl flex flex-col z-50 overflow-hidden">
                     {/* Header */}
                     <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-4">
                         <div className="flex items-center gap-3">
-                            <Cloud className="w-5 h-5" />
+                            <Cloud className="w-5 h-5"/>
                             <div>
                                 <h1 className="text-lg font-bold">মেঘবন্ধু বট</h1>
                                 <p className="text-xs text-blue-100">আবহাওয়া ও সচেতনতা সহায়ক</p>
@@ -182,7 +238,8 @@ export default function ChatWidget() {
                     {/* Messages Container */}
                     <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-gray-50">
                         {messages.map((message) => (
-                            <div key={message.id} className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
+                            <div key={message.id}
+                                 className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
                                 <div
                                     className={`max-w-xs px-3 py-2 rounded-lg text-sm ${
                                         message.type === "user"
@@ -190,7 +247,15 @@ export default function ChatWidget() {
                                             : "bg-white text-gray-800 border border-gray-200 rounded-bl-none"
                                     }`}
                                 >
-                                    <p className="whitespace-pre-wrap">{message.content}</p>
+                                    {message.content.match(/\.(jpeg|jpg|gif|png|webp|svg)$/i) ? (
+                                        <img
+                                            src={message.content}
+                                            alt="Bot message"
+                                            className="rounded-xl max-w-xs border border-gray-200 shadow-sm"
+                                        />
+                                    ) : (
+                                        <p className="whitespace-pre-wrap">{message.content}</p>
+                                    )}
 
                                     {message.options && (
                                         <div className="mt-2 space-y-1">
@@ -216,23 +281,24 @@ export default function ChatWidget() {
 
                         {loading && (
                             <div className="flex justify-start">
-                                <div className="bg-white text-gray-800 border border-gray-200 px-3 py-2 rounded-lg rounded-bl-none">
+                                <div
+                                    className="bg-white text-gray-800 border border-gray-200 px-3 py-2 rounded-lg rounded-bl-none">
                                     <div className="flex gap-2">
                                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                                         <div
                                             className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                                            style={{ animationDelay: "0.1s" }}
+                                            style={{animationDelay: "0.1s"}}
                                         ></div>
                                         <div
                                             className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                                            style={{ animationDelay: "0.2s" }}
+                                            style={{animationDelay: "0.2s"}}
                                         ></div>
                                     </div>
                                 </div>
                             </div>
                         )}
 
-                        <div ref={messagesEndRef} />
+                        <div ref={messagesEndRef}/>
                     </div>
 
                     {/* Input Area */}
@@ -252,7 +318,7 @@ export default function ChatWidget() {
                                 disabled={loading || !input.trim()}
                                 className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded font-medium transition-colors disabled:opacity-50 flex items-center gap-1"
                             >
-                                <Send className="w-4 h-4" />
+                                <Send className="w-4 h-4"/>
                             </button>
                         </div>
                     </div>
